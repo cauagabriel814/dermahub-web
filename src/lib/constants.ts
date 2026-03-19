@@ -1,19 +1,21 @@
 import {
   LayoutDashboard,
   Users,
-  Syringe,
-  CalendarClock,
+  ClipboardList,
+  BellRing,
   Zap,
   MessageSquare,
   Settings,
 } from "lucide-react";
 
 export const NAV_ITEMS = [
-  { label: "Dashboard", href: "/", icon: LayoutDashboard },
-  { label: "Pacientes", href: "/patients", icon: Users },
-  { label: "Procedimentos", href: "/procedures/new", icon: Syringe },
-  { label: "Recalls", href: "/recalls", icon: CalendarClock },
-  { label: "Automações", href: "/automations", icon: Zap },
-  { label: "Mensagens", href: "/messages", icon: MessageSquare },
-  { label: "Configurações", href: "/settings", icon: Settings },
-] as const;
+  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/patients", label: "Pacientes", icon: Users },
+  { href: "/procedures/new", label: "Registrar Procedimento", icon: ClipboardList },
+  { href: "/recalls", label: "Recalls", icon: BellRing },
+  { href: "/automations", label: "Automações", icon: Zap },
+  { href: "/messages", label: "Mensagens", icon: MessageSquare },
+  { href: "/settings/procedure-types", label: "Configurações", icon: Settings },
+];
+
+export const APP_NAME = "DermaHub";
