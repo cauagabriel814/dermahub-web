@@ -60,8 +60,8 @@ export default function ProcedureTypesPage() {
     <div className="space-y-6 max-w-3xl">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Tipos de Procedimento</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-brand font-normal tracking-wide text-foreground">Tipos de Procedimento</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             {types?.length ?? 0} procedimentos cadastrados
           </p>
         </div>
@@ -97,17 +97,17 @@ export default function ProcedureTypesPage() {
 
       <div className="bg-white rounded-lg border">
         {isLoading ? (
-          <div className="p-6 text-center text-gray-500">Carregando...</div>
+          <div className="p-6 text-center text-muted-foreground">Carregando...</div>
         ) : types?.length === 0 ? (
-          <div className="p-6 text-center text-gray-500">Nenhum tipo cadastrado.</div>
+          <div className="p-6 text-center text-muted-foreground">Nenhum tipo cadastrado.</div>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b bg-gray-50">
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Nome</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Valor</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Recall</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
+              <tr className="border-b bg-muted/40">
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Nome</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Valor</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Recall</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Status</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
@@ -130,22 +130,22 @@ export default function ProcedureTypesPage() {
                         <button type="button" onClick={() => saveEdit(t.id)} className="p-1 text-green-600 hover:text-green-800">
                           <Check className="h-4 w-4" />
                         </button>
-                        <button type="button" onClick={() => setEditingId(null)} className="p-1 text-gray-400 hover:text-gray-600">
+                        <button type="button" onClick={() => setEditingId(null)} className="p-1 text-gray-400 hover:text-muted-foreground">
                           <X className="h-4 w-4" />
                         </button>
                       </div>
                     </td>
                   </tr>
                 ) : (
-                  <tr key={t.id} className="border-b last:border-0 hover:bg-gray-50">
+                  <tr key={t.id} className="border-b last:border-0 hover:bg-muted/40">
                     <td className="px-4 py-3 font-medium">{t.name}</td>
-                    <td className="px-4 py-3 text-gray-600">
+                    <td className="px-4 py-3 text-muted-foreground">
                       {t.price ? `R$ ${t.price.toLocaleString("pt-BR")}` : "—"}
                     </td>
-                    <td className="px-4 py-3 text-gray-600">{t.default_recall_days} dias</td>
+                    <td className="px-4 py-3 text-muted-foreground">{t.default_recall_days} dias</td>
                     <td className="px-4 py-3">
                       <button type="button" onClick={() => handleToggle(t.id, t.active)}>
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium cursor-pointer ${t.active ? "bg-green-100 text-green-700 hover:bg-green-200" : "bg-gray-100 text-gray-500 hover:bg-gray-200"}`}>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium cursor-pointer ${t.active ? "bg-green-100 text-green-700 hover:bg-green-200" : "bg-muted/60 text-muted-foreground hover:bg-gray-200"}`}>
                           {t.active ? "Ativo" : "Inativo"}
                         </span>
                       </button>

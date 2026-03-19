@@ -9,7 +9,7 @@ export default function DashboardLayout({
 }) {
   return (
     <Providers>
-      <div className="flex h-screen bg-gray-50">
+      <div className="flex h-screen bg-background">
         <Sidebar />
         <div className="flex flex-1 flex-col overflow-hidden">
           <Header />

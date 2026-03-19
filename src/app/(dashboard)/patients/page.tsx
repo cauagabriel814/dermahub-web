@@ -20,8 +20,8 @@ export default function PatientsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Pacientes</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-brand font-normal tracking-wide text-foreground">Pacientes</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             {data?.total ?? 0} pacientes cadastrados
           </p>
         </div>
@@ -45,29 +45,29 @@ export default function PatientsPage() {
 
       <div className="bg-white rounded-lg border">
         {isLoading ? (
-          <div className="p-8 text-center text-gray-500">Carregando...</div>
+          <div className="p-8 text-center text-muted-foreground">Carregando...</div>
         ) : data?.items.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">
+          <div className="p-8 text-center text-muted-foreground">
             Nenhum paciente encontrado.
           </div>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b bg-gray-50">
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Nome</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Telefone</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">E-mail</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Último Procedimento</th>
+              <tr className="border-b bg-muted/40">
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Nome</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Telefone</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">E-mail</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Último Procedimento</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody>
               {data?.items.map((p) => (
-                <tr key={p.id} className="border-b last:border-0 hover:bg-gray-50">
+                <tr key={p.id} className="border-b last:border-0 hover:bg-muted/40">
                   <td className="px-4 py-3 font-medium">{p.full_name}</td>
-                  <td className="px-4 py-3 text-gray-600">{p.phone}</td>
-                  <td className="px-4 py-3 text-gray-600">{p.email ?? "—"}</td>
-                  <td className="px-4 py-3 text-gray-600">
+                  <td className="px-4 py-3 text-muted-foreground">{p.phone}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{p.email ?? "—"}</td>
+                  <td className="px-4 py-3 text-muted-foreground">
                     {p.last_procedure_date
                       ? new Date(p.last_procedure_date + "T00:00:00").toLocaleDateString("pt-BR")
                       : "—"}

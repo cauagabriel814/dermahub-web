@@ -22,8 +22,8 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
     enabled: !!id,
   });
 
-  if (isLoading) return <div className="p-8 text-gray-500">Carregando...</div>;
-  if (!patient) return <div className="p-8 text-gray-500">Paciente não encontrado.</div>;
+  if (isLoading) return <div className="p-8 text-muted-foreground">Carregando...</div>;
+  if (!patient) return <div className="p-8 text-muted-foreground">Paciente não encontrado.</div>;
 
   return (
     <div className="space-y-6 max-w-2xl">
@@ -34,19 +34,19 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
             Voltar
           </Button>
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">{patient.full_name}</h1>
+        <h1 className="text-2xl font-brand font-normal tracking-wide text-foreground">{patient.full_name}</h1>
       </div>
 
       <div className="bg-white rounded-lg border p-6 space-y-3">
         <h2 className="font-semibold text-gray-700">Dados do Paciente</h2>
         <div className="grid grid-cols-2 gap-4 text-sm">
-          <div><span className="text-gray-500">Telefone</span><p className="font-medium">{patient.phone}</p></div>
-          <div><span className="text-gray-500">E-mail</span><p className="font-medium">{patient.email ?? "—"}</p></div>
-          <div><span className="text-gray-500">Último procedimento</span><p className="font-medium">{patient.last_procedure_date ? new Date(patient.last_procedure_date + "T00:00:00").toLocaleDateString("pt-BR") : "—"}</p></div>
+          <div><span className="text-muted-foreground">Telefone</span><p className="font-medium">{patient.phone}</p></div>
+          <div><span className="text-muted-foreground">E-mail</span><p className="font-medium">{patient.email ?? "—"}</p></div>
+          <div><span className="text-muted-foreground">Último procedimento</span><p className="font-medium">{patient.last_procedure_date ? new Date(patient.last_procedure_date + "T00:00:00").toLocaleDateString("pt-BR") : "—"}</p></div>
         </div>
         {patient.notes && (
           <div className="text-sm">
-            <span className="text-gray-500">Observações</span>
+            <span className="text-muted-foreground">Observações</span>
             <p className="mt-1">{patient.notes}</p>
           </div>
         )}
@@ -60,22 +60,22 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
           </Link>
         </div>
         {!records || records.length === 0 ? (
-          <div className="p-6 text-center text-gray-500 text-sm">Nenhum procedimento registrado.</div>
+          <div className="p-6 text-center text-muted-foreground text-sm">Nenhum procedimento registrado.</div>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b bg-gray-50">
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Data</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Procedimento</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Notas</th>
+              <tr className="border-b bg-muted/40">
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Data</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Procedimento</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Notas</th>
               </tr>
             </thead>
             <tbody>
               {records.map((r) => (
                 <tr key={r.id} className="border-b last:border-0">
                   <td className="px-4 py-3">{new Date(r.procedure_date + "T00:00:00").toLocaleDateString("pt-BR")}</td>
-                  <td className="px-4 py-3 text-gray-600">{r.procedure_type_id}</td>
-                  <td className="px-4 py-3 text-gray-500">{r.notes ?? "—"}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{r.procedure_type_id}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{r.notes ?? "—"}</td>
                 </tr>
               ))}
             </tbody>

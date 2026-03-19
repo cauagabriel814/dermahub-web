@@ -1,8 +1,21 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Poppins, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+// Corpo de texto
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-sans",
+});
+
+// Títulos — placeholder para Higuen Elegant Serif (premium)
+// Para ativar Higuen: coloque os arquivos em /public/fonts/ e descomente @font-face no globals.css
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-brand",
+});
 
 export const metadata: Metadata = {
   title: "DermaHub",
@@ -16,7 +29,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={inter.className}>{children}</body>
+      <body className={`${poppins.variable} ${cormorant.variable} font-sans`}>
+        {children}
+      </body>
     </html>
   );
 }

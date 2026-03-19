@@ -85,8 +85,8 @@ export default function NewProcedurePage() {
   return (
     <div className="max-w-lg space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Registrar Procedimento</h1>
-        <p className="text-sm text-gray-500 mt-1">Cadastro rápido — menos de 20 segundos</p>
+        <h1 className="text-2xl font-brand font-normal tracking-wide text-foreground">Registrar Procedimento</h1>
+        <p className="text-sm text-muted-foreground mt-1">Cadastro rápido — menos de 20 segundos</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-white rounded-lg border p-6">
@@ -113,7 +113,7 @@ export default function NewProcedurePage() {
                 <button
                   key={p.id}
                   type="button"
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg"
+                  className="w-full text-left px-4 py-2 text-sm hover:bg-muted/40 first:rounded-t-lg last:rounded-b-lg"
                   onClick={() => {
                     setSelectedPatient(p);
                     setPatientSearch(p.full_name);

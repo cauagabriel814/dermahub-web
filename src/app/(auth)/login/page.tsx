@@ -42,11 +42,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">DermaHub</CardTitle>
-          <p className="text-sm text-muted-foreground">
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <Card className="w-full max-w-md shadow-sm border-border">
+        <CardHeader className="text-center pb-2">
+          <CardTitle className="text-3xl font-serif font-normal tracking-wide text-foreground">
+            DermaHub
+          </CardTitle>
+          <p className="text-sm text-muted-foreground mt-1">
             Faça login para continuar
           </p>
         </CardHeader>

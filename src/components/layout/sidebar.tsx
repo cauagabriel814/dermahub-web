@@ -13,14 +13,16 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="flex h-screen w-64 flex-col border-r bg-white">
+    <aside className="flex h-screen w-64 flex-col bg-sidebar text-sidebar-foreground">
       {/* Logo */}
-      <div className="flex h-16 items-center px-6 border-b">
-        <h1 className="text-xl font-bold text-gray-900">DermaHub</h1>
+      <div className="flex h-16 items-center px-6 border-b border-sidebar-border">
+        <h1 className="text-lg font-semibold tracking-wide text-sidebar-foreground font-serif">
+          DermaHub
+        </h1>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 px-3 py-4">
+      <nav className="flex-1 space-y-0.5 px-3 py-4">
         {NAV_ITEMS.map((item) => {
           const isActive =
             item.href === "/"
@@ -32,13 +34,13 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-gray-100 text-gray-900"
-                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                  : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
               )}
             >
-              <item.icon className="h-5 w-5" />
+              <item.icon className="h-4 w-4 shrink-0" />
               {item.label}
             </Link>
           );
@@ -46,13 +48,13 @@ export function Sidebar() {
       </nav>
 
       {/* Logout */}
-      <div className="border-t p-3">
+      <div className="border-t border-sidebar-border p-3">
         <Button
           variant="ghost"
-          className="w-full justify-start gap-3 text-gray-500 hover:text-gray-900"
+          className="w-full justify-start gap-3 text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
           onClick={logout}
         >
-          <LogOut className="h-5 w-5" />
+          <LogOut className="h-4 w-4" />
           Sair
         </Button>
       </div>

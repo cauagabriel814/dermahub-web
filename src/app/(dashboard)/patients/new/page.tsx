@@ -37,8 +37,8 @@ export default function NewPatientPage() {
   return (
     <div className="max-w-lg space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Novo Paciente</h1>
-        <p className="text-sm text-gray-500 mt-1">Preencha os dados do paciente</p>
+        <h1 className="text-2xl font-brand font-normal tracking-wide text-foreground">Novo Paciente</h1>
+        <p className="text-sm text-muted-foreground mt-1">Preencha os dados do paciente</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-white rounded-lg border p-6">
