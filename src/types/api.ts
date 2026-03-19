@@ -37,10 +37,11 @@ export interface ProcedureType {
   clinic_id: string;
   name: string;
   default_recall_days: number;
+  price: number | null;
   active: boolean;
 }
-export interface ProcedureTypeCreate { name: string; default_recall_days: number; }
-export interface ProcedureTypeUpdate { name?: string; default_recall_days?: number; active?: boolean; }
+export interface ProcedureTypeCreate { name: string; default_recall_days: number; price?: number; }
+export interface ProcedureTypeUpdate { name?: string; default_recall_days?: number; price?: number; active?: boolean; }
 
 // ProcedureRecord
 export interface ProcedureRecord {
