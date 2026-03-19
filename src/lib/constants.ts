@@ -5,6 +5,7 @@ import {
   BellRing,
   Zap,
   MessageSquare,
+  FileText,
   Settings,
 } from "lucide-react";
 
@@ -15,7 +16,8 @@ export const NAV_ITEMS = [
   { href: "/recalls", label: "Recalls", icon: BellRing },
   { href: "/automations", label: "Automações", icon: Zap },
   { href: "/messages", label: "Mensagens", icon: MessageSquare },
-  { href: "/settings/procedure-types", label: "Configurações", icon: Settings },
+  { href: "/settings/message-templates", label: "Modelos", icon: FileText },
+  { href: "/settings/procedure-types", label: "Procedimentos", icon: Settings },
 ];
 
 export const APP_NAME = "DermaHub";

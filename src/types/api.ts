@@ -59,3 +59,80 @@ export interface ProcedureRecordCreate {
   procedure_date: string;
   notes?: string;
 }
+
+// MessageTemplate
+export interface MessageTemplate {
+  id: string;
+  clinic_id: string;
+  name: string;
+  content: string;
+  active: boolean;
+}
+export interface MessageTemplateCreate { name: string; content: string; }
+export interface MessageTemplateUpdate { name?: string; content?: string; active?: boolean; }
+
+// AutomationRule
+export type EventType = "post_procedure" | "recall";
+export interface AutomationRule {
+  id: string;
+  clinic_id: string;
+  procedure_type_id: string;
+  name: string;
+  trigger_offset_days: number;
+  message_template_id: string;
+  event_type: EventType;
+  sort_order: number;
+  active: boolean;
+}
+export interface AutomationRuleCreate {
+  procedure_type_id: string;
+  name: string;
+  trigger_offset_days: number;
+  message_template_id: string;
+  event_type?: EventType;
+  sort_order?: number;
+}
+export interface AutomationRuleUpdate {
+  name?: string;
+  trigger_offset_days?: number;
+  message_template_id?: string;
+  event_type?: EventType;
+  sort_order?: number;
+  active?: boolean;
+}
+
+// ScheduledMessage
+export type MessageStatus = "pending" | "sent" | "delivered" | "failed" | "cancelled";
+export interface ScheduledMessage {
+  id: string;
+  clinic_id: string;
+  patient_id: string;
+  procedure_record_id: string;
+  automation_rule_id: string;
+  content: string;
+  scheduled_for: string;
+  status: MessageStatus;
+  sent_at: string | null;
+  failure_reason: string | null;
+}
+
+// Dashboard
+export interface DashboardSummary {
+  total_patients: number;
+  procedures_this_month: number;
+  pending_messages: number;
+  messages_sent_this_month: number;
+}
+
+// MessageLog
+export interface MessageLog {
+  id: string;
+  clinic_id: string;
+  patient_id: string;
+  scheduled_message_id: string | null;
+  direction: "outbound" | "inbound";
+  content: string;
+  provider_message_id: string;
+  sent_at: string | null;
+  delivery_status: string;
+}
