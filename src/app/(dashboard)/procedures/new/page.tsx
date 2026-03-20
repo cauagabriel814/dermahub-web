@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -22,7 +22,7 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function NewProcedurePage() {
+function NewProcedureForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const preloadPatientId = searchParams.get("patient_id");
@@ -50,7 +50,6 @@ export default function NewProcedurePage() {
     defaultValues: { procedure_date: new Date().toISOString().split("T")[0] },
   });
 
-  // preload patient from query param
   useEffect(() => {
     if (preloadPatientId && searchResults?.items) {
       const found = searchResults.items.find(p => p.id === preloadPatientId);
@@ -186,5 +185,13 @@ export default function NewProcedurePage() {
         </div>
       </form>
     </div>
+  );
+}
+
+export default function NewProcedurePage() {
+  return (
+    <Suspense fallback={<div className="text-muted-foreground text-sm">Carregando...</div>}>
+      <NewProcedureForm />
+    </Suspense>
   );
 }
