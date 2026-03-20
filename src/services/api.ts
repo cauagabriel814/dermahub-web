@@ -1,7 +1,5 @@
 import Cookies from "js-cookie";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
 export async function apiFetch<T>(
   path: string,
   options: RequestInit = {}
@@ -17,7 +15,7 @@ export async function apiFetch<T>(
     (headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await fetch(`/api${path}`, {
     ...options,
     headers,
   });
