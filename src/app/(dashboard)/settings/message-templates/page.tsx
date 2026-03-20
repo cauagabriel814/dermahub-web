@@ -151,7 +151,6 @@ export default function MessageTemplatesPage() {
                 color: "oklch(0.250 0.026 50.8)",
                 background: "oklch(1 0 0)",
                 fontFamily: "var(--font-sans)",
-                focusRingColor: "oklch(0.312 0.0434 119.6)",
               }}
             />
             <PreviewContent content={editing.content} />
