@@ -10,11 +10,11 @@ import { getProcedureRecords, getProcedureTypes } from "@/services/procedures";
 import { getScheduledMessages, getMessageLogs } from "@/services/messaging";
 
 const STATUS_STYLE: Record<string, { bg: string; color: string; label: string }> = {
-  pending:   { bg: "oklch(0.327 0.0736 48.0 / 0.12)", color: "oklch(0.327 0.0736 48.0)", label: "Pendente" },
-  sent:      { bg: "oklch(0.312 0.0434 119.6 / 0.12)", color: "oklch(0.312 0.0434 119.6)", label: "Enviado" },
-  delivered: { bg: "oklch(0.312 0.0434 119.6 / 0.20)", color: "oklch(0.250 0.050 118)", label: "Entregue" },
-  failed:    { bg: "oklch(0.450 0.150 20 / 0.12)", color: "oklch(0.450 0.150 20)", label: "Falhou" },
-  cancelled: { bg: "oklch(0.878 0.015 58)", color: "oklch(0.596 0.036 57.9)", label: "Cancelado" },
+  pending:   { bg: "oklch(0.520 0.120 45 / 0.10)", color: "oklch(0.520 0.120 45)", label: "Pendente" },
+  sent:      { bg: "oklch(0.380 0.060 150 / 0.10)", color: "oklch(0.380 0.060 150)", label: "Enviado" },
+  delivered: { bg: "oklch(0.380 0.060 150 / 0.18)", color: "oklch(0.320 0.060 150)", label: "Entregue" },
+  failed:    { bg: "oklch(0.540 0.200 25 / 0.10)", color: "oklch(0.540 0.200 25)", label: "Falhou" },
+  cancelled: { bg: "var(--muted)", color: "var(--muted-foreground)", label: "Cancelado" },
 };
 
 export default function PatientDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -85,15 +85,15 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
         className="animate-fade-up rounded-2xl overflow-hidden"
         style={{ background: "oklch(1 0 0)", border: "1px solid oklch(0.878 0.015 58)", boxShadow: "var(--shadow-warm-sm)" }}
       >
-        <div className="h-1.5" style={{ background: "linear-gradient(90deg, oklch(0.429 0.0306 72.6), oklch(0.327 0.0736 48.0))" }} />
+        <div className="h-[3px]" style={{ background: "linear-gradient(90deg, var(--terracotta), oklch(0.600 0.100 50))" }} />
         <div className="p-6 flex gap-5 items-start">
           <div
             className="flex h-14 w-14 items-center justify-center rounded-2xl shrink-0 text-xl font-semibold"
             style={{
-              background: "linear-gradient(135deg, oklch(0.429 0.0306 72.6), oklch(0.327 0.0736 48.0))",
-              color: "oklch(0.975 0.005 60)",
+              background: "linear-gradient(135deg, var(--terracotta), oklch(0.480 0.130 44))",
+              color: "var(--primary-foreground)",
               fontFamily: "var(--font-brand)",
-              boxShadow: "0 4px 16px oklch(0.429 0.0306 72.6 / 0.3)",
+              boxShadow: "0 4px 16px oklch(0.520 0.120 45 / 0.3)",
             }}
           >
             {initials}
@@ -124,11 +124,10 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
           </div>
           <Link href={`/procedures/new?patient_id=${patient.id}`}>
             <Button
-              size="sm"
-              className="btn-primary-shimmer rounded-xl text-xs gap-1.5"
-              style={{ color: "oklch(0.975 0.005 60)", border: "none" }}
+              className="btn-primary-shimmer rounded-xl text-sm gap-2 px-5 py-2.5 font-semibold"
+              style={{ color: "var(--primary-foreground)", border: "none" }}
             >
-              <ClipboardList className="h-3.5 w-3.5" />
+              <ClipboardList className="h-4 w-4" />
               Registrar Procedimento
             </Button>
           </Link>

@@ -93,7 +93,7 @@ export default function AutomationsPage() {
       <div className="flex items-end justify-between animate-fade-up">
         <div>
           <h1 className="page-title">Automações</h1>
-          <p className="text-sm mt-1" style={{ color: "oklch(0.596 0.036 57.9)" }}>
+          <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
             Configure quando mensagens são enviadas automaticamente
           </p>
         </div>
@@ -101,7 +101,7 @@ export default function AutomationsPage() {
           <Button
             onClick={() => setCreating(true)}
             className="btn-primary-shimmer gap-2 rounded-xl text-sm font-medium px-5"
-            style={{ color: "oklch(0.975 0.005 60)", border: "none" }}
+            style={{ color: "var(--primary-foreground)", border: "none" }}
           >
             <Plus className="h-4 w-4" />
             Nova Regra
@@ -113,14 +113,14 @@ export default function AutomationsPage() {
       {creating && (
         <div
           className="animate-fade-up rounded-2xl p-5 space-y-4"
-          style={{ background: "oklch(1 0 0)", border: "1px solid oklch(0.312 0.0434 119.6 / 0.3)", boxShadow: "var(--shadow-warm-sm)" }}
+          style={{ background: "var(--cream)", border: "1px solid oklch(0.312 0.0434 119.6 / 0.3)", boxShadow: "var(--shadow-warm-sm)" }}
         >
           <h2 className="text-base font-light" style={{ fontFamily: "var(--font-brand)", color: "oklch(0.250 0.026 50.8)" }}>
             Nova Regra de Automação
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="text-xs font-medium uppercase tracking-widest mb-1.5 block" style={{ color: "oklch(0.596 0.036 57.9)" }}>
+              <label className="text-xs font-medium uppercase tracking-widest mb-1.5 block" style={{ color: "var(--muted-foreground)" }}>
                 Nome da regra
               </label>
               <Input
@@ -128,39 +128,39 @@ export default function AutomationsPage() {
                 onChange={(e) => setNewRule({ ...newRule, name: e.target.value })}
                 placeholder="Ex: Botox D+3"
                 className="rounded-xl"
-                style={{ borderColor: "oklch(0.878 0.015 58)" }}
+                style={{ borderColor: "var(--border)" }}
               />
             </div>
             <div>
-              <label className="text-xs font-medium uppercase tracking-widest mb-1.5 block" style={{ color: "oklch(0.596 0.036 57.9)" }}>
+              <label className="text-xs font-medium uppercase tracking-widest mb-1.5 block" style={{ color: "var(--muted-foreground)" }}>
                 Tipo de procedimento
               </label>
               <select
                 value={newRule.procedure_type_id}
                 onChange={(e) => setNewRule({ ...newRule, procedure_type_id: e.target.value })}
                 className="w-full h-10 px-3 rounded-xl text-sm border focus:outline-none focus:ring-2"
-                style={{ borderColor: "oklch(0.878 0.015 58)", color: "oklch(0.250 0.026 50.8)", background: "oklch(1 0 0)" }}
+                style={{ borderColor: "var(--border)", color: "oklch(0.250 0.026 50.8)", background: "var(--cream)" }}
               >
                 <option value="">Selecione...</option>
                 {procedureTypes.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-xs font-medium uppercase tracking-widest mb-1.5 block" style={{ color: "oklch(0.596 0.036 57.9)" }}>
+              <label className="text-xs font-medium uppercase tracking-widest mb-1.5 block" style={{ color: "var(--muted-foreground)" }}>
                 Tipo de evento
               </label>
               <select
                 value={newRule.event_type}
                 onChange={(e) => setNewRule({ ...newRule, event_type: e.target.value as EventTypeKey })}
                 className="w-full h-10 px-3 rounded-xl text-sm border focus:outline-none"
-                style={{ borderColor: "oklch(0.878 0.015 58)", color: "oklch(0.250 0.026 50.8)", background: "oklch(1 0 0)" }}
+                style={{ borderColor: "var(--border)", color: "oklch(0.250 0.026 50.8)", background: "var(--cream)" }}
               >
                 <option value="post_procedure">Pós-procedimento</option>
                 <option value="recall">Recall</option>
               </select>
             </div>
             <div>
-              <label className="text-xs font-medium uppercase tracking-widest mb-1.5 block" style={{ color: "oklch(0.596 0.036 57.9)" }}>
+              <label className="text-xs font-medium uppercase tracking-widest mb-1.5 block" style={{ color: "var(--muted-foreground)" }}>
                 Disparar em D+
               </label>
               <Input
@@ -169,18 +169,18 @@ export default function AutomationsPage() {
                 value={newRule.trigger_offset_days}
                 onChange={(e) => setNewRule({ ...newRule, trigger_offset_days: e.target.value })}
                 className="rounded-xl"
-                style={{ borderColor: "oklch(0.878 0.015 58)" }}
+                style={{ borderColor: "var(--border)" }}
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="text-xs font-medium uppercase tracking-widest mb-1.5 block" style={{ color: "oklch(0.596 0.036 57.9)" }}>
+              <label className="text-xs font-medium uppercase tracking-widest mb-1.5 block" style={{ color: "var(--muted-foreground)" }}>
                 Modelo de mensagem
               </label>
               <select
                 value={newRule.message_template_id}
                 onChange={(e) => setNewRule({ ...newRule, message_template_id: e.target.value })}
                 className="w-full h-10 px-3 rounded-xl text-sm border focus:outline-none"
-                style={{ borderColor: "oklch(0.878 0.015 58)", color: "oklch(0.250 0.026 50.8)", background: "oklch(1 0 0)" }}
+                style={{ borderColor: "var(--border)", color: "oklch(0.250 0.026 50.8)", background: "var(--cream)" }}
               >
                 <option value="">Selecione um modelo...</option>
                 {templates.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
@@ -192,7 +192,7 @@ export default function AutomationsPage() {
               onClick={handleCreate}
               disabled={createMut.isPending || !newRule.name || !newRule.procedure_type_id || !newRule.message_template_id}
               className="btn-primary-shimmer gap-2 rounded-xl text-sm px-5"
-              style={{ color: "oklch(0.975 0.005 60)", border: "none" }}
+              style={{ color: "var(--primary-foreground)", border: "none" }}
             >
               {createMut.isPending ? "Criando..." : "Criar Regra"}
             </Button>
@@ -200,7 +200,7 @@ export default function AutomationsPage() {
               variant="ghost"
               onClick={() => { setCreating(false); setNewRule(defaultNew()); }}
               className="rounded-xl text-sm"
-              style={{ color: "oklch(0.596 0.036 57.9)" }}
+              style={{ color: "var(--muted-foreground)" }}
             >
               Cancelar
             </Button>
@@ -220,48 +220,48 @@ export default function AutomationsPage() {
         </div>
       ) : rules.length === 0 ? (
         <div className="py-16 text-center animate-fade-up rounded-2xl"
-          style={{ background: "oklch(1 0 0)", border: "1px solid oklch(0.878 0.015 58)" }}>
-          <Zap className="h-8 w-8 mx-auto mb-3" style={{ color: "oklch(0.844 0.024 55.1)" }} />
-          <p className="text-sm" style={{ color: "oklch(0.596 0.036 57.9)" }}>Nenhuma regra criada ainda.</p>
+          style={{ background: "var(--cream)", border: "1px solid var(--border)" }}>
+          <Zap className="h-8 w-8 mx-auto mb-3" style={{ color: "var(--border)" }} />
+          <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>Nenhuma regra criada ainda.</p>
         </div>
       ) : (
         <div className="space-y-4 animate-fade-up delay-100">
           {Object.entries(grouped).map(([ptId, ptRules]) => (
             <div key={ptId}
               className="rounded-2xl overflow-hidden"
-              style={{ background: "oklch(1 0 0)", border: "1px solid oklch(0.878 0.015 58)", boxShadow: "var(--shadow-warm-sm)" }}
+              style={{ background: "var(--cream)", border: "1px solid var(--border)", boxShadow: "var(--shadow-warm-sm)" }}
             >
               <div className="px-5 py-3 flex items-center gap-2"
-                style={{ background: "oklch(0.975 0.005 60)", borderBottom: "1px solid oklch(0.878 0.015 58)" }}>
+                style={{ background: "var(--muted)", borderBottom: "1px solid var(--border)" }}>
                 <div className="h-2 w-2 rounded-full"
-                  style={{ background: "oklch(0.429 0.0306 72.6)", boxShadow: "0 0 6px oklch(0.429 0.0306 72.6 / 0.5)" }} />
-                <h3 className="text-sm font-medium" style={{ color: "oklch(0.250 0.026 50.8)" }}>
+                  style={{ background: ptRules.some(r => r.active) ? "var(--green)" : "var(--border)", boxShadow: ptRules.some(r => r.active) ? "0 0 6px oklch(0.380 0.060 150 / 0.5)" : "none" }} />
+                <h3 className="text-sm font-medium" style={{ color: "var(--brown-deep)" }}>
                   {ptMap[ptId] ?? "Procedimento desconhecido"}
                 </h3>
               </div>
               {ptRules.sort((a, b) => a.sort_order - b.sort_order).map((rule, i) => (
                 <div key={rule.id}
                   className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 items-center px-5 py-3.5"
-                  style={{ borderBottom: i < ptRules.length - 1 ? "1px solid oklch(0.920 0.010 60)" : "none" }}
+                  style={{ borderBottom: i < ptRules.length - 1 ? "1px solid var(--muted)" : "none" }}
                 >
                   <div className="min-w-0">
-                    <p className="text-sm font-medium" style={{ color: "oklch(0.250 0.026 50.8)" }}>{rule.name}</p>
-                    <p className="text-xs mt-0.5" style={{ color: "oklch(0.596 0.036 57.9)" }}>
+                    <p className="text-sm font-medium" style={{ color: "var(--brown-deep)" }}>{rule.name}</p>
+                    <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>
                       {tplMap[rule.message_template_id] ?? rule.message_template_id}
                     </p>
                   </div>
                   <span className="text-xs px-2.5 py-0.5 rounded-full"
-                    style={{ background: "oklch(0.312 0.0434 119.6 / 0.10)", color: "oklch(0.312 0.0434 119.6)" }}>
+                    style={{ background: "var(--green-muted)", color: "var(--green)" }}>
                     {EVENT_LABELS[rule.event_type as EventTypeKey]}
                   </span>
                   <span className="text-xs font-medium font-mono"
-                    style={{ color: "oklch(0.429 0.0306 72.6)" }}>
+                    style={{ color: "var(--green)" }}>
                     D+{rule.trigger_offset_days}
                   </span>
                   <span className="text-xs px-2.5 py-0.5 rounded-full"
                     style={rule.active
-                      ? { background: "oklch(0.312 0.0434 119.6 / 0.12)", color: "oklch(0.312 0.0434 119.6)" }
-                      : { background: "oklch(0.878 0.015 58)", color: "oklch(0.596 0.036 57.9)" }
+                      ? { background: "var(--green-muted)", color: "var(--green)" }
+                      : { background: "var(--muted)", color: "var(--muted-foreground)" }
                     }
                   >
                     {rule.active ? "Ativo" : "Inativo"}
@@ -271,8 +271,8 @@ export default function AutomationsPage() {
                     className="p-1.5 rounded-lg transition-colors hover:bg-orange-50"
                   >
                     {rule.active
-                      ? <ToggleRight className="h-5 w-5" style={{ color: "oklch(0.312 0.0434 119.6)" }} />
-                      : <ToggleLeft className="h-5 w-5" style={{ color: "oklch(0.844 0.024 55.1)" }} />
+                      ? <ToggleRight className="h-5 w-5" style={{ color: "var(--green)" }} />
+                      : <ToggleLeft className="h-5 w-5" style={{ color: "var(--border)" }} />
                     }
                   </button>
                 </div>
