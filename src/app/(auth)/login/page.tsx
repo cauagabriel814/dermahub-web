@@ -6,15 +6,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { login } from "@/services/auth";
 
 const loginSchema = z.object({
-  email: z.string().email("Email inválido"),
-  password: z.string().min(1, "Senha é obrigatória"),
+  email: z.string().email("Email invalido"),
+  password: z.string().min(1, "Senha e obrigatoria"),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
@@ -37,52 +35,45 @@ export default function LoginPage() {
       await login(data);
       router.push("/");
     } catch {
-      setError("Credenciais inválidas");
+      setError("Credenciais invalidas");
     }
   }
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center"
-      style={{
-        background: "linear-gradient(160deg, oklch(0.975 0.005 60) 0%, oklch(0.950 0.010 65) 50%, oklch(0.920 0.010 60) 100%)",
-      }}
+      className="min-h-screen flex items-center justify-center relative overflow-hidden"
+      style={{ background: "oklch(0.960 0.008 70)" }}
     >
-      {/* Decorative blobs */}
+      {/* Background decoration */}
       <div
-        className="absolute top-0 right-0 h-96 w-96 rounded-full opacity-20 blur-3xl pointer-events-none"
-        style={{ background: "oklch(0.312 0.0434 119.6)" }}
+        className="absolute -top-32 -right-32 h-[500px] w-[500px] rounded-full opacity-[0.06]"
+        style={{ background: "radial-gradient(circle, oklch(0.520 0.120 45) 0%, transparent 70%)" }}
       />
       <div
-        className="absolute bottom-0 left-0 h-64 w-64 rounded-full opacity-15 blur-3xl pointer-events-none"
-        style={{ background: "oklch(0.429 0.0306 72.6)" }}
+        className="absolute -bottom-24 -left-24 h-[400px] w-[400px] rounded-full opacity-[0.04]"
+        style={{ background: "radial-gradient(circle, oklch(0.380 0.060 150) 0%, transparent 70%)" }}
       />
 
       <div
-        className="animate-fade-up relative w-full max-w-sm rounded-3xl overflow-hidden"
+        className="animate-fade-up relative w-full max-w-[380px] rounded-2xl overflow-hidden"
         style={{
-          background: "oklch(1 0 0)",
-          boxShadow: "0 24px 64px oklch(0.250 0.026 50.8 / 0.12), 0 4px 16px oklch(0.250 0.026 50.8 / 0.06)",
-          border: "1px solid oklch(0.878 0.015 58)",
+          background: "oklch(0.985 0.004 70)",
+          boxShadow: "0 20px 60px oklch(0.220 0.025 45 / 0.12), 0 4px 16px oklch(0.220 0.025 45 / 0.06)",
+          border: "1px solid oklch(0.900 0.010 65)",
         }}
       >
-        {/* Top accent */}
-        <div
-          className="h-1 w-full"
-          style={{ background: "linear-gradient(90deg, oklch(0.312 0.0434 119.6), oklch(0.429 0.0306 72.6), oklch(0.327 0.0736 48.0))" }}
-        />
+        {/* Top terracotta bar */}
+        <div className="accent-bar-terracotta" style={{ height: "3px" }} />
 
         <div className="px-8 pt-10 pb-8">
           {/* Monogram */}
           <div className="flex justify-center mb-6">
             <div
-              className="flex h-14 w-14 items-center justify-center rounded-2xl text-lg font-semibold"
+              className="flex h-14 w-14 items-center justify-center rounded-xl text-lg font-bold"
               style={{
-                background: "linear-gradient(135deg, oklch(0.312 0.0434 119.6) 0%, oklch(0.380 0.048 118) 100%)",
-                color: "oklch(0.975 0.005 60)",
-                boxShadow: "0 8px 24px oklch(0.312 0.0434 119.6 / 0.4)",
-                fontFamily: "var(--font-brand)",
-                fontSize: "1.25rem",
+                background: "linear-gradient(135deg, oklch(0.220 0.025 45) 0%, oklch(0.300 0.025 48) 100%)",
+                color: "oklch(0.940 0.010 60)",
+                boxShadow: "0 6px 20px oklch(0.220 0.025 45 / 0.35)",
               }}
             >
               DH
@@ -92,54 +83,54 @@ export default function LoginPage() {
           {/* Title */}
           <div className="text-center mb-8">
             <h1
-              className="text-4xl font-light tracking-wide"
-              style={{ fontFamily: "var(--font-brand)", color: "oklch(0.250 0.026 50.8)" }}
+              className="text-3xl font-semibold tracking-tight"
+              style={{ color: "oklch(0.220 0.025 45)" }}
             >
               DermaHub
             </h1>
-            <p className="text-xs tracking-widest uppercase mt-1" style={{ color: "oklch(0.596 0.036 57.9)" }}>
-              Área Restrita
+            <p className="text-[11px] tracking-[0.2em] uppercase mt-1.5 font-medium" style={{ color: "oklch(0.520 0.015 60)" }}>
+              Area Restrita
             </p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium tracking-wide uppercase" style={{ color: "oklch(0.596 0.036 57.9)" }}>
+              <Label className="text-[11px] font-semibold tracking-[0.08em] uppercase" style={{ color: "oklch(0.520 0.015 60)" }}>
                 E-mail
               </Label>
               <Input
-                id="email"
                 type="email"
                 placeholder="seu@email.com"
-                className="rounded-xl text-sm"
-                style={{ borderColor: "oklch(0.878 0.015 58)", height: "2.75rem" }}
+                className="rounded-lg text-sm h-11"
+                style={{ borderColor: "oklch(0.900 0.010 65)", background: "oklch(0.970 0.005 70)" }}
                 {...register("email")}
               />
               {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium tracking-wide uppercase" style={{ color: "oklch(0.596 0.036 57.9)" }}>
+              <Label className="text-[11px] font-semibold tracking-[0.08em] uppercase" style={{ color: "oklch(0.520 0.015 60)" }}>
                 Senha
               </Label>
               <Input
-                id="password"
                 type="password"
                 placeholder="••••••••"
-                className="rounded-xl text-sm"
-                style={{ borderColor: "oklch(0.878 0.015 58)", height: "2.75rem" }}
+                className="rounded-lg text-sm h-11"
+                style={{ borderColor: "oklch(0.900 0.010 65)", background: "oklch(0.970 0.005 70)" }}
                 {...register("password")}
               />
               {errors.password && <p className="text-xs text-red-500">{errors.password.message}</p>}
             </div>
 
-            {error && <p className="text-xs text-red-500 text-center">{error}</p>}
+            {error && (
+              <p className="text-xs text-center font-medium" style={{ color: "oklch(0.540 0.200 25)" }}>{error}</p>
+            )}
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="btn-primary-shimmer w-full rounded-xl py-3 text-sm font-medium tracking-wide disabled:opacity-60 disabled:cursor-not-allowed mt-2"
-              style={{ color: "oklch(0.975 0.005 60)", border: "none", cursor: isSubmitting ? "not-allowed" : "pointer" }}
+              className="btn-primary-shimmer w-full rounded-lg py-3 text-sm font-semibold tracking-wide disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+              style={{ border: "none", cursor: isSubmitting ? "not-allowed" : "pointer" }}
             >
               {isSubmitting ? "Entrando..." : "Entrar"}
             </button>

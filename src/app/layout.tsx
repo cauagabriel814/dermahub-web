@@ -1,20 +1,12 @@
 import type { Metadata } from "next";
-import { Poppins, Cormorant_Garamond } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 
-// Corpo de texto
+// Poppins para tudo (corpo + títulos)
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["300", "400", "500", "600", "700"],
   variable: "--font-sans",
-});
-
-// Títulos — placeholder para Higuen Elegant Serif (premium)
-// Para ativar Higuen: coloque os arquivos em /public/fonts/ e descomente @font-face no globals.css
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  variable: "--font-brand",
 });
 
 export const metadata: Metadata = {
@@ -29,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={`${poppins.variable} ${cormorant.variable} font-sans`}>
+      <body className={`${poppins.variable} font-sans`}>
         {children}
       </body>
     </html>

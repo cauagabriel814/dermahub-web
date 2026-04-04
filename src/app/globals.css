@@ -3,7 +3,7 @@
 @import "shadcn/tailwind.css";
 
 /*
-  Fonte dos títulos: Higuen Elegant Serif (premium)
+  Fonte dos titulos: Higuen Elegant Serif (premium)
   Para ativar: coloque os arquivos em /public/fonts/ e descomente abaixo.
 
 @font-face {
@@ -18,7 +18,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-brand: var(--font-brand);
+  --font-brand: var(--font-sans);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
@@ -62,68 +62,89 @@
 }
 
 :root {
-  /* DermaHub brand — warm earthy palette */
-  --background: oklch(0.975 0.005 60);
-  --foreground: oklch(0.250 0.0264 50.8);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.250 0.0264 50.8);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.250 0.0264 50.8);
-  --primary: oklch(0.429 0.0306 72.6);
-  --primary-foreground: oklch(0.975 0.005 60);
-  --secondary: oklch(0.844 0.0243 55.1);
-  --secondary-foreground: oklch(0.250 0.0264 50.8);
-  --muted: oklch(0.920 0.010 60);
-  --muted-foreground: oklch(0.596 0.0361 57.9);
-  --accent: oklch(0.920 0.010 60);
-  --accent-foreground: oklch(0.429 0.0306 72.6);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.878 0.015 58);
-  --input: oklch(0.878 0.015 58);
-  --ring: oklch(0.429 0.0306 72.6);
-  --chart-1: oklch(0.429 0.0306 72.6);
-  --chart-2: oklch(0.596 0.0361 57.9);
-  --chart-3: oklch(0.844 0.0243 55.1);
-  --chart-4: oklch(0.327 0.0736 48.0);
-  --chart-5: oklch(0.312 0.0434 119.6);
-  --radius: 0.625rem;
+  /*
+   * DERMAHUB DESIGN SYSTEM v3
+   * Marrom profundo / Bege nude / Verde escuro / Terracota / Cinza neutro
+   */
 
-  /* verde floresta — accent principal */
-  --forest: oklch(0.312 0.0434 119.6);          /* #2e341a */
-  --forest-light: oklch(0.380 0.048 118);        /* verde ligeiramente mais claro */
-  --forest-muted: oklch(0.312 0.0434 119.6 / 0.12);
+  /* ── Fundo & Texto ─────────────────────────────── */
+  --background: oklch(0.960 0.008 70);          /* bege claro nude */
+  --foreground: oklch(0.220 0.025 45);          /* marrom escuro profundo */
+  --card: oklch(0.985 0.004 70);                /* branco quente */
+  --card-foreground: oklch(0.220 0.025 45);
+  --popover: oklch(0.990 0.003 70);
+  --popover-foreground: oklch(0.220 0.025 45);
 
-  --sidebar: oklch(0.195 0.022 48);
-  --sidebar-foreground: oklch(0.930 0.008 58);
-  --sidebar-primary: oklch(0.844 0.0243 55.1);
-  --sidebar-primary-foreground: oklch(0.195 0.022 48);
-  --sidebar-accent: oklch(0.280 0.024 52);
-  --sidebar-accent-foreground: oklch(0.930 0.008 58);
-  --sidebar-border: oklch(0.300 0.022 50);
-  --sidebar-ring: oklch(0.312 0.0434 119.6);    /* verde no focus ring da sidebar */
+  /* ── Terracota / Cobre — CTA principal ─────────── */
+  --primary: oklch(0.520 0.120 45);             /* terracota */
+  --primary-foreground: oklch(0.985 0.006 60);  /* branco creme */
 
-  /* shadow system */
-  --shadow-warm-sm: 0 1px 3px oklch(0.250 0.026 50.8 / 0.08), 0 1px 2px oklch(0.250 0.026 50.8 / 0.06);
-  --shadow-warm-md: 0 4px 16px oklch(0.250 0.026 50.8 / 0.08), 0 2px 6px oklch(0.250 0.026 50.8 / 0.05);
-  --shadow-warm-lg: 0 8px 32px oklch(0.250 0.026 50.8 / 0.10), 0 4px 12px oklch(0.250 0.026 50.8 / 0.06);
+  /* ── Bege sutil — botoes secundarios ───────────── */
+  --secondary: oklch(0.930 0.012 65);
+  --secondary-foreground: oklch(0.350 0.030 50);
+
+  /* ── Cinza neutro — textos de suporte ──────────── */
+  --muted: oklch(0.940 0.006 70);
+  --muted-foreground: oklch(0.520 0.015 60);
+
+  /* ── Verde escuro — confianca, status positivo ─── */
+  --accent: oklch(0.380 0.060 150);
+  --accent-foreground: oklch(0.970 0.008 150);
+
+  --destructive: oklch(0.540 0.200 25);
+  --border: oklch(0.900 0.010 65);
+  --input: oklch(0.910 0.008 65);
+  --ring: oklch(0.520 0.120 45);                /* terracota no focus */
+  --radius: 0.5rem;
+
+  /* ── Charts ────────────────────────────────────── */
+  --chart-1: oklch(0.520 0.120 45);             /* terracota */
+  --chart-2: oklch(0.380 0.060 150);            /* verde */
+  --chart-3: oklch(0.600 0.090 65);             /* cobre claro */
+  --chart-4: oklch(0.420 0.030 45);             /* marrom medio */
+  --chart-5: oklch(0.700 0.060 70);             /* dourado suave */
+
+  /* ── Tokens semanticos ─────────────────────────── */
+  --terracotta: oklch(0.520 0.120 45);
+  --terracotta-hover: oklch(0.480 0.130 44);
+  --terracotta-glow: oklch(0.520 0.120 45 / 0.25);
+  --green: oklch(0.380 0.060 150);
+  --green-light: oklch(0.440 0.065 150);
+  --green-muted: oklch(0.380 0.060 150 / 0.10);
+  --brown-deep: oklch(0.220 0.025 45);
+  --brown-medium: oklch(0.420 0.030 50);
+  --nude: oklch(0.960 0.008 70);
+  --cream: oklch(0.985 0.004 70);
+
+  /* ── Sidebar — marrom profundo premium ─────────── */
+  --sidebar: oklch(0.200 0.024 45);
+  --sidebar-foreground: oklch(0.920 0.010 60);
+  --sidebar-primary: oklch(0.520 0.120 45);     /* terracota */
+  --sidebar-primary-foreground: oklch(0.985 0.006 60);
+  --sidebar-accent: oklch(0.270 0.025 48);
+  --sidebar-accent-foreground: oklch(0.920 0.010 60);
+  --sidebar-border: oklch(0.290 0.020 48);
+  --sidebar-ring: oklch(0.520 0.120 45);
+
+  /* ── Shadow system ─────────────────────────────── */
+  --shadow-sm: 0 1px 2px oklch(0.220 0.025 45 / 0.05);
+  --shadow-md: 0 4px 16px oklch(0.220 0.025 45 / 0.07), 0 1px 3px oklch(0.220 0.025 45 / 0.04);
+  --shadow-lg: 0 8px 32px oklch(0.220 0.025 45 / 0.09), 0 2px 8px oklch(0.220 0.025 45 / 0.05);
 }
 
-/* ─── Animations ───────────────────────────────────────────── */
+/* ─── Animations ──────────────────────────────────── */
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes fade-in {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-
 @keyframes shimmer {
   0%   { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
-
 @keyframes slide-in-left {
   from { opacity: 0; transform: translateX(-8px); }
   to   { opacity: 1; transform: translateX(0); }
@@ -147,18 +168,18 @@
 .delay-300 { animation-delay: 300ms; }
 .delay-400 { animation-delay: 400ms; }
 
-/* ─── Custom scrollbar ─────────────────────────────────────── */
+/* ─── Custom scrollbar ────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: oklch(0.878 0.015 58);
+  background: oklch(0.520 0.120 45 / 0.25);
   border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.596 0.036 57.9);
+  background: oklch(0.520 0.120 45 / 0.45);
 }
 
-/* ─── Base ─────────────────────────────────────────────────── */
+/* ─── Base ────────────────────────────────────────── */
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -172,79 +193,107 @@
   html {
     @apply font-sans;
   }
-
-  /* Warm grain texture */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 9999;
-    opacity: 0.018;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-    background-size: 180px 180px;
-  }
 }
 
-/* ─── Card elevation ───────────────────────────────────────── */
+/* ─── Card elevated ───────────────────────────────── */
 .card-elevated {
-  box-shadow: var(--shadow-warm-md);
-  transition: box-shadow 0.25s ease, transform 0.25s cubic-bezier(0.22,1,0.36,1);
+  background: var(--cream);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  transition: box-shadow 0.25s ease, transform 0.25s cubic-bezier(0.22,1,0.36,1), border-color 0.25s ease;
 }
 .card-elevated:hover {
-  box-shadow: var(--shadow-warm-lg);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
+  border-color: oklch(0.520 0.120 45 / 0.15);
 }
 
-/* ─── Page title ───────────────────────────────────────────── */
+/* ─── Page title ──────────────────────────────────── */
 .page-title {
   font-family: var(--font-brand);
-  font-weight: 300;
-  font-size: 1.875rem;
-  letter-spacing: 0.02em;
-  line-height: 1.2;
-  color: oklch(0.250 0.0264 50.8);
+  font-weight: 600;
+  font-size: 1.625rem;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  color: var(--brown-deep);
 }
 
-/* ─── Stat card number ─────────────────────────────────────── */
+/* ─── Stat card number ────────────────────────────── */
 .stat-number {
   font-family: var(--font-brand);
-  font-weight: 300;
-  font-size: 3rem;
+  font-weight: 700;
+  font-size: 2.25rem;
   line-height: 1;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
-/* ─── Table refinements ────────────────────────────────────── */
+/* ─── Table refinements ───────────────────────────── */
 .table-row-hover {
   transition: background 0.15s ease;
 }
 .table-row-hover:hover {
-  background: oklch(0.920 0.010 60 / 0.6);
+  background: oklch(0.520 0.120 45 / 0.04);
 }
 
-/* ─── Input focus ──────────────────────────────────────────── */
+/* ─── Input focus — terracota ring ────────────────── */
 input:focus-visible, textarea:focus-visible, select:focus-visible {
-  outline: 2px solid oklch(0.429 0.0306 72.6 / 0.5);
+  outline: 2px solid oklch(0.520 0.120 45 / 0.45);
   outline-offset: 0;
+  box-shadow: 0 0 0 3px oklch(0.520 0.120 45 / 0.08);
 }
 
-/* ─── Button primary shimmer ───────────────────────────────── */
+/* ─── Button primary — terracota CTA ──────────────── */
 .btn-primary-shimmer {
   background: linear-gradient(
     135deg,
-    oklch(0.429 0.0306 72.6) 0%,
-    oklch(0.480 0.035 68) 50%,
-    oklch(0.429 0.0306 72.6) 100%
+    var(--terracotta) 0%,
+    oklch(0.560 0.115 48) 50%,
+    var(--terracotta) 100%
   );
   background-size: 200% auto;
+  color: oklch(0.985 0.006 60);
+  font-weight: 600;
+  letter-spacing: 0.01em;
   transition: background-position 0.5s ease, box-shadow 0.25s ease, transform 0.15s ease;
+  box-shadow: 0 2px 8px var(--terracotta-glow);
 }
 .btn-primary-shimmer:hover {
   background-position: right center;
-  box-shadow: 0 4px 14px oklch(0.429 0.0306 72.6 / 0.35);
+  box-shadow: 0 6px 20px var(--terracotta-glow);
   transform: translateY(-1px);
 }
 .btn-primary-shimmer:active {
   transform: translateY(0);
+}
+
+/* ─── Status badges ───────────────────────────────── */
+.badge-success {
+  background: var(--green-muted);
+  color: var(--green);
+  font-weight: 500;
+  font-size: 0.75rem;
+  padding: 2px 10px;
+  border-radius: 99px;
+}
+.badge-warning {
+  background: oklch(0.520 0.120 45 / 0.10);
+  color: var(--terracotta);
+  font-weight: 500;
+  font-size: 0.75rem;
+  padding: 2px 10px;
+  border-radius: 99px;
+}
+
+/* ─── Green accent line ───────────────────────────── */
+.accent-bar-green {
+  height: 3px;
+  background: linear-gradient(90deg, var(--green), var(--green-light));
+  border-radius: 99px;
+}
+
+/* ─── Terracota accent line ───────────────────────── */
+.accent-bar-terracotta {
+  height: 3px;
+  background: linear-gradient(90deg, var(--terracotta), oklch(0.600 0.100 50));
+  border-radius: 99px;
 }

@@ -61,15 +61,44 @@ export interface ProcedureRecordCreate {
 }
 
 // MessageTemplate
+export type MessageType = "text" | "buttons" | "carousel";
+export interface TemplateButton {
+  id: string;
+  text: string;
+  type: "REPLY" | "URL" | "COPY" | "CALL";
+}
+export interface CarouselItem {
+  text: string;
+  image?: string;
+  buttons: TemplateButton[];
+}
+export interface TemplateComponents {
+  buttons?: TemplateButton[];
+  carousel?: CarouselItem[];
+  image?: string;
+}
 export interface MessageTemplate {
   id: string;
   clinic_id: string;
   name: string;
   content: string;
+  message_type: MessageType;
+  components: TemplateComponents | null;
   active: boolean;
 }
-export interface MessageTemplateCreate { name: string; content: string; }
-export interface MessageTemplateUpdate { name?: string; content?: string; active?: boolean; }
+export interface MessageTemplateCreate {
+  name: string;
+  content: string;
+  message_type?: MessageType;
+  components?: TemplateComponents | null;
+}
+export interface MessageTemplateUpdate {
+  name?: string;
+  content?: string;
+  message_type?: MessageType;
+  components?: TemplateComponents | null;
+  active?: boolean;
+}
 
 // AutomationRule
 export type EventType = "post_procedure" | "recall";
