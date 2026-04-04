@@ -124,7 +124,15 @@ export default function RecallsPage() {
                   <div className="min-w-0">
                     <p className="text-sm truncate" style={{ color: "oklch(0.250 0.026 50.8)" }}>{msg.content}</p>
                     {msg.failure_reason && (
-                      <p className="text-xs mt-0.5 truncate" style={{ color: "oklch(0.450 0.150 20)" }}>
+                      <p
+                        className="text-xs mt-0.5 truncate"
+                        style={{
+                          color: msg.status === "sent" || msg.status === "delivered"
+                            ? "var(--muted-foreground)" : "oklch(0.540 0.200 25)",
+                          textDecoration: msg.status === "sent" || msg.status === "delivered"
+                            ? "line-through" : "none",
+                        }}
+                      >
                         {msg.failure_reason}
                       </p>
                     )}
