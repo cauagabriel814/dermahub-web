@@ -165,3 +165,74 @@ export interface MessageLog {
   sent_at: string | null;
   delivery_status: string;
 }
+
+// ROI Dashboard
+export interface RoiFunnel {
+  sent: number;
+  delivered: number;
+  responded: number;
+  positive: number;
+  returned: number;
+}
+export interface RoiRanking {
+  procedure: string;
+  price: number;
+  sent: number;
+  positive: number;
+  returned: number;
+  potential_revenue: number;
+  confirmed_revenue: number;
+}
+export interface RoiDashboard {
+  period_days: number;
+  funnel: RoiFunnel;
+  potential_revenue: number;
+  confirmed_revenue: number;
+  response_rate: number;
+  conversion_rate: number;
+  ranking: RoiRanking[];
+}
+
+// Leads
+export type LeadStatus = "waiting" | "contacted" | "scheduled" | "returned";
+export interface Lead {
+  id: string;
+  patient_name: string;
+  patient_phone: string;
+  patient_id: string;
+  procedure_name: string;
+  procedure_price: number;
+  responded_at: string | null;
+  lead_status: LeadStatus;
+  lead_contacted_at: string | null;
+}
+export interface LeadsSummary {
+  waiting: number;
+  contacted_today: number;
+  scheduled: number;
+}
+export interface LeadsResponse {
+  summary: LeadsSummary;
+  items: Lead[];
+}
+
+// User Management
+export interface UserInfo {
+  id: string;
+  clinic_id: string;
+  name: string;
+  email: string;
+  role: "admin" | "secretary";
+  created_at: string;
+}
+export interface UserCreateData {
+  name: string;
+  email: string;
+  password: string;
+  role: "admin" | "secretary";
+}
+export interface UserUpdateData {
+  name?: string;
+  email?: string;
+  role?: "admin" | "secretary";
+}

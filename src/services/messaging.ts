@@ -10,6 +10,11 @@ import type {
   MessageTemplateUpdate,
   ScheduledMessage,
   MessageStatus,
+  RoiDashboard,
+  LeadsResponse,
+  UserInfo,
+  UserCreateData,
+  UserUpdateData,
 } from "@/types/api";
 
 // --- Message Templates ---
@@ -73,4 +78,34 @@ export async function getMessageLogs(params?: { patient_id?: string; skip?: numb
   if (params?.limit !== undefined) q.set("limit", String(params.limit));
   const qs = q.toString();
   return apiFetch<MessageLog[]>(`/messages${qs ? `?${qs}` : ""}`);
+}
+
+// --- ROI Dashboard ---
+export async function getRoiDashboard(period = 30) {
+  return apiFetch<RoiDashboard>(`/dashboard/roi?period=${period}`);
+}
+
+// --- Leads ---
+export async function getLeads(params?: { status?: string; search?: string; skip?: number; limit?: number }) {
+  const q = new URLSearchParams();
+  if (params?.status) q.set("status", params.status);
+  if (params?.search) q.set("search", params.search);
+  if (params?.skip !== undefined) q.set("skip", String(params.skip));
+  if (params?.limit !== undefined) q.set("limit", String(params.limit));
+  const qs = q.toString();
+  return apiFetch<LeadsResponse>(`/leads${qs ? `?${qs}` : ""}`);
+}
+export async function updateLead(id: string, data: { lead_status: string }) {
+  return apiFetch<{ ok: boolean; lead_status: string }>(`/leads/${id}`, { method: "PATCH", body: JSON.stringify(data) });
+}
+
+// --- Users ---
+export async function getUsers() {
+  return apiFetch<UserInfo[]>("/users");
+}
+export async function createUserApi(data: UserCreateData) {
+  return apiFetch<UserInfo>("/users", { method: "POST", body: JSON.stringify(data) });
+}
+export async function updateUserApi(id: string, data: UserUpdateData) {
+  return apiFetch<UserInfo>(`/users/${id}`, { method: "PATCH", body: JSON.stringify(data) });
 }

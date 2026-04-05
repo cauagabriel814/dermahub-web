@@ -8,9 +8,12 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { NAV_ITEMS } from "@/lib/constants";
 import { logout } from "@/services/auth";
+import { useAuth } from "@/hooks/use-auth";
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { user } = useAuth();
+  const visibleItems = NAV_ITEMS.filter(item => !item.adminOnly || user?.role === "admin");
 
   return (
     <aside
@@ -54,7 +57,7 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 space-y-0.5 px-3 py-5">
-        {NAV_ITEMS.map((item) => {
+        {visibleItems.map((item) => {
           const isActive =
             item.href === "/"
               ? pathname === "/"
