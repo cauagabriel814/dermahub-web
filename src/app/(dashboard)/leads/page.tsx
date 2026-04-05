@@ -2,33 +2,106 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { UserCheck, Phone, Clock, CalendarCheck, CheckCircle2, Search } from "lucide-react";
+import { Phone, ChevronRight, Search, UserCheck, ExternalLink } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 import { getLeads, updateLead } from "@/services/messaging";
+import type { Lead } from "@/types/api";
 
-const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string }> = {
-  waiting: { label: "Aguardando", bg: "oklch(0.520 0.120 45 / 0.10)", color: "var(--terracotta)" },
-  contacted: { label: "Contatado", bg: "oklch(0.600 0.090 65 / 0.10)", color: "oklch(0.600 0.090 65)" },
-  scheduled: { label: "Agendado", bg: "var(--green-muted)", color: "var(--green)" },
-  returned: { label: "Retornou", bg: "oklch(0.380 0.060 150 / 0.18)", color: "oklch(0.320 0.060 150)" },
+const COLUMNS = [
+  { key: "waiting", label: "Aguardando", color: "var(--terracotta)", bg: "oklch(0.520 0.120 45 / 0.06)", border: "oklch(0.520 0.120 45 / 0.20)" },
+  { key: "contacted", label: "Contatado", color: "oklch(0.600 0.090 65)", bg: "oklch(0.600 0.090 65 / 0.06)", border: "oklch(0.600 0.090 65 / 0.20)" },
+  { key: "scheduled", label: "Agendado", color: "var(--green)", bg: "var(--green-muted)", border: "oklch(0.380 0.060 150 / 0.20)" },
+  { key: "returned", label: "Retornou", color: "oklch(0.320 0.060 150)", bg: "oklch(0.380 0.060 150 / 0.10)", border: "oklch(0.380 0.060 150 / 0.25)" },
+] as const;
+
+const NEXT_STATUS: Record<string, string[]> = {
+  waiting: ["contacted", "scheduled"],
+  contacted: ["scheduled"],
+  scheduled: [],
+  returned: [],
 };
 
-const FILTERS: { label: string; value: string | undefined }[] = [
-  { label: "Todos", value: undefined },
-  { label: "Aguardando", value: "waiting" },
-  { label: "Contatado", value: "contacted" },
-  { label: "Agendado", value: "scheduled" },
-  { label: "Retornou", value: "returned" },
-];
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value / 100);
+}
+
+function LeadCard({ lead, onMove }: { lead: Lead; onMove: (id: string, status: string) => void }) {
+  const col = COLUMNS.find((c) => c.key === lead.lead_status) || COLUMNS[0];
+  const nextStatuses = NEXT_STATUS[lead.lead_status] || [];
+
+  return (
+    <div
+      className="rounded-lg p-4 space-y-3 transition-all hover:shadow-md"
+      style={{ background: "white", border: `1px solid ${col.border}` }}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <Link
+            href={`/patients/${lead.patient_id}`}
+            className="text-sm font-semibold hover:underline flex items-center gap-1"
+            style={{ color: "var(--brown-deep)" }}
+          >
+            {lead.patient_name}
+            <ExternalLink className="h-3 w-3 opacity-40" />
+          </Link>
+          <a
+            href={`https://wa.me/${lead.patient_phone}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs flex items-center gap-1 mt-0.5"
+            style={{ color: col.color }}
+          >
+            <Phone className="h-3 w-3" />
+            {lead.patient_phone}
+          </a>
+        </div>
+        {lead.procedure_price > 0 && (
+          <span className="text-xs font-bold whitespace-nowrap" style={{ color: col.color }}>
+            {formatCurrency(lead.procedure_price)}
+          </span>
+        )}
+      </div>
+
+      <div className="flex items-center gap-2 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+        <span className="font-medium">{lead.procedure_name}</span>
+        {lead.responded_at && (
+          <>
+            <span>·</span>
+            <span>{new Date(lead.responded_at).toLocaleDateString("pt-BR")}</span>
+          </>
+        )}
+      </div>
+
+      {nextStatuses.length > 0 && (
+        <div className="flex gap-2 pt-1">
+          {nextStatuses.map((status) => {
+            const target = COLUMNS.find((c) => c.key === status)!;
+            return (
+              <button
+                key={status}
+                onClick={() => onMove(lead.id, status)}
+                className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-md text-[11px] font-semibold transition-colors"
+                style={{ background: target.bg, color: target.color, border: `1px solid ${target.border}` }}
+              >
+                <ChevronRight className="h-3 w-3" />
+                {target.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function LeadsPage() {
   const qc = useQueryClient();
-  const [filterStatus, setFilterStatus] = useState<string | undefined>(undefined);
   const [search, setSearch] = useState("");
 
   const { data, isLoading } = useQuery({
-    queryKey: ["leads", filterStatus, search],
-    queryFn: () => getLeads({ status: filterStatus, search: search || undefined }),
+    queryKey: ["leads", search],
+    queryFn: () => getLeads({ search: search || undefined, limit: 200 }),
   });
 
   const updateMut = useMutation({
@@ -36,57 +109,23 @@ export default function LeadsPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["leads"] }),
   });
 
-  const summary = data?.summary;
   const items = data?.items || [];
+  const summary = data?.summary;
 
-  const summaryCards = [
-    { label: "Aguardando contato", value: summary?.waiting ?? 0, icon: Clock, color: "var(--terracotta)", bg: "oklch(0.520 0.120 45 / 0.08)" },
-    { label: "Contatados hoje", value: summary?.contacted_today ?? 0, icon: Phone, color: "oklch(0.600 0.090 65)", bg: "oklch(0.600 0.090 65 / 0.08)" },
-    { label: "Agendados", value: summary?.scheduled ?? 0, icon: CalendarCheck, color: "var(--green)", bg: "var(--green-muted)" },
-  ];
+  function handleMove(id: string, status: string) {
+    updateMut.mutate({ id, status });
+  }
 
   return (
-    <div className="space-y-6">
-      <div className="animate-fade-up">
-        <h1 className="page-title">Leads</h1>
-        <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
-          Pacientes que demonstraram interesse em retornar
-        </p>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-3">
-        {summaryCards.map((card, i) => (
-          <div key={card.label} className="card-elevated animate-fade-up rounded-xl p-5" style={{ animationDelay: `${i * 80}ms` }}>
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: card.bg }}>
-                <card.icon className="h-5 w-5" style={{ color: card.color }} />
-              </div>
-              <div>
-                <p className="text-2xl font-bold" style={{ color: "var(--brown-deep)" }}>{card.value}</p>
-                <p className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>{card.label}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="flex flex-wrap items-center gap-3 animate-fade-up delay-100">
-        <div className="flex gap-2">
-          {FILTERS.map((f) => (
-            <button
-              key={f.label}
-              onClick={() => setFilterStatus(f.value)}
-              className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
-              style={filterStatus === f.value
-                ? { background: "var(--terracotta)", color: "var(--primary-foreground)" }
-                : { background: "var(--muted)", color: "var(--muted-foreground)" }
-              }
-            >
-              {f.label}
-            </button>
-          ))}
+    <div className="space-y-5">
+      <div className="flex items-end justify-between animate-fade-up">
+        <div>
+          <h1 className="page-title">Leads</h1>
+          <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
+            Pacientes que demonstraram interesse em retornar
+          </p>
         </div>
-        <div className="relative flex-1 min-w-[200px] max-w-xs">
+        <div className="relative min-w-[220px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
           <Input
             value={search}
@@ -97,73 +136,63 @@ export default function LeadsPage() {
         </div>
       </div>
 
-      <div className="card-elevated animate-fade-up delay-200 rounded-xl overflow-hidden">
-        {isLoading ? (
-          <div className="py-16 text-center">
-            <div className="flex justify-center gap-1.5">
-              {[0, 1, 2].map((i) => (
-                <div key={i} className="h-2 w-2 rounded-full animate-pulse" style={{ background: "var(--border)", animationDelay: `${i * 150}ms` }} />
-              ))}
-            </div>
+      {isLoading ? (
+        <div className="py-16 text-center animate-fade-up">
+          <div className="flex justify-center gap-1.5">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="h-2 w-2 rounded-full animate-pulse" style={{ background: "var(--border)", animationDelay: `${i * 150}ms` }} />
+            ))}
           </div>
-        ) : items.length === 0 ? (
-          <div className="py-16 text-center">
-            <UserCheck className="h-8 w-8 mx-auto mb-3" style={{ color: "var(--border)" }} />
-            <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>Nenhum lead encontrado.</p>
-          </div>
-        ) : (
-          <div className="divide-y" style={{ borderColor: "var(--muted)" }}>
-            {items.map((lead) => {
-              const cfg = STATUS_CONFIG[lead.lead_status] || STATUS_CONFIG.waiting;
-              return (
-                <div key={lead.id} className="flex items-center gap-4 px-6 py-4 table-row-hover">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold" style={{ color: "var(--brown-deep)" }}>{lead.patient_name}</p>
-                    <div className="flex items-center gap-3 mt-1">
-                      <a href={`tel:${lead.patient_phone}`} className="text-xs flex items-center gap-1" style={{ color: "var(--terracotta)" }}>
-                        <Phone className="h-3 w-3" />
-                        {lead.patient_phone}
-                      </a>
-                      <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>{lead.procedure_name}</span>
-                      {lead.responded_at && (
-                        <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-                          {new Date(lead.responded_at).toLocaleDateString("pt-BR")}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <span className="text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap" style={{ background: cfg.bg, color: cfg.color }}>
-                    {cfg.label}
+        </div>
+      ) : items.length === 0 && !search ? (
+        <div className="py-16 text-center animate-fade-up rounded-xl" style={{ background: "var(--cream)", border: "1px solid var(--border)" }}>
+          <UserCheck className="h-8 w-8 mx-auto mb-3" style={{ color: "var(--border)" }} />
+          <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>Nenhum lead ainda. Quando pacientes responderem "Sim", aparecerao aqui.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-4 gap-4 animate-fade-up delay-100" style={{ minHeight: "60vh" }}>
+          {COLUMNS.map((col) => {
+            const colItems = items.filter((l) => l.lead_status === col.key);
+            const colCount = col.key === "waiting" ? (summary?.waiting ?? colItems.length)
+              : col.key === "scheduled" ? (summary?.scheduled ?? colItems.length)
+              : colItems.length;
+
+            return (
+              <div key={col.key} className="flex flex-col">
+                <div
+                  className="flex items-center justify-between px-3 py-2.5 rounded-t-xl"
+                  style={{ background: col.bg, borderBottom: `2px solid ${col.color}` }}
+                >
+                  <span className="text-xs font-bold uppercase tracking-wide" style={{ color: col.color }}>
+                    {col.label}
                   </span>
-                  <div className="flex gap-1.5">
-                    {lead.lead_status === "waiting" && (
-                      <button
-                        onClick={() => updateMut.mutate({ id: lead.id, status: "contacted" })}
-                        className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
-                        style={{ background: "oklch(0.600 0.090 65 / 0.10)", color: "oklch(0.600 0.090 65)" }}
-                      >
-                        Contatado
-                      </button>
-                    )}
-                    {(lead.lead_status === "waiting" || lead.lead_status === "contacted") && (
-                      <button
-                        onClick={() => updateMut.mutate({ id: lead.id, status: "scheduled" })}
-                        className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
-                        style={{ background: "var(--green-muted)", color: "var(--green)" }}
-                      >
-                        Agendado
-                      </button>
-                    )}
-                    {lead.lead_status === "returned" && (
-                      <CheckCircle2 className="h-5 w-5" style={{ color: "var(--green)" }} />
-                    )}
-                  </div>
+                  <span
+                    className="text-[11px] font-bold px-2 py-0.5 rounded-full"
+                    style={{ background: col.color, color: "white" }}
+                  >
+                    {colCount}
+                  </span>
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+
+                <div
+                  className="flex-1 space-y-2 p-2 rounded-b-xl overflow-y-auto"
+                  style={{ background: col.bg, maxHeight: "calc(60vh - 44px)" }}
+                >
+                  {colItems.length === 0 ? (
+                    <div className="py-8 text-center">
+                      <p className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>Nenhum lead</p>
+                    </div>
+                  ) : (
+                    colItems.map((lead) => (
+                      <LeadCard key={lead.id} lead={lead} onMove={handleMove} />
+                    ))
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
