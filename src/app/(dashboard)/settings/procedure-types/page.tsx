@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Plus, X, Check } from "lucide-react";
+import { Pencil, Plus, X, Check, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createProcedureType, getProcedureTypes, updateProcedureType } from "@/services/procedures";
+import { createProcedureType, deleteProcedureType, getProcedureTypes, updateProcedureType } from "@/services/procedures";
 import type { ProcedureType } from "@/types/api";
 
 type EditState = { name: string; default_recall_days: string; price: string };
@@ -49,6 +49,12 @@ export default function ProcedureTypesPage() {
     });
     await queryClient.invalidateQueries({ queryKey: ["procedure-types-all"] });
     setEditingId(null);
+  }
+
+  async function handleDelete(id: string) {
+    if (!window.confirm("Tem certeza que deseja excluir este procedimento?")) return;
+    await deleteProcedureType(id);
+    await queryClient.invalidateQueries({ queryKey: ["procedure-types-all"] });
   }
 
   async function handleToggle(id: string, active: boolean) {
@@ -151,9 +157,14 @@ export default function ProcedureTypesPage() {
                       </button>
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <button type="button" onClick={() => startEdit(t)} className="p-1 text-gray-400 hover:text-gray-700">
-                        <Pencil className="h-4 w-4" />
-                      </button>
+                      <div className="flex justify-end gap-1">
+                        <button type="button" onClick={() => startEdit(t)} className="p-1 text-gray-400 hover:text-gray-700">
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                        <button type="button" onClick={() => handleDelete(t.id)} className="p-1 text-gray-400 hover:text-red-600">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 )

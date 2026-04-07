@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { TrendingUp, DollarSign, MessageSquare, Target, Star } from "lucide-react";
+import { TrendingUp, DollarSign, MessageSquare, Target, Star, CheckCircle2 } from "lucide-react";
 import { getRoiDashboard } from "@/services/messaging";
 
 const PERIODS = [
@@ -61,6 +61,43 @@ export default function RoiPage() {
     { label: "Taxa de Resposta", value: data ? `${data.response_rate}%` : "—", icon: MessageSquare, color: "oklch(0.600 0.090 65)", bg: "oklch(0.600 0.090 65 / 0.08)" },
     { label: "Taxa de Conversão", value: data ? `${data.conversion_rate}%` : "—", icon: Target, color: "var(--brown-medium)", bg: "oklch(0.420 0.030 50 / 0.08)" },
   ];
+
+  /* ---------- Insights Inteligentes ---------- */
+  const insights = useMemo(() => {
+    if (!data) return [];
+    const items: string[] = [];
+
+    // Top procedure confirmation rate
+    if (data.ranking && data.ranking.length > 0) {
+      const top = [...data.ranking].sort((a, b) => b.potential_revenue - a.potential_revenue)[0];
+      if (top.sent > 0) {
+        const rate = Math.round((top.positive / top.sent) * 100);
+        items.push(`${top.procedure} possui ${rate}% de taxa de confirmação`);
+      }
+    }
+
+    // Conversion rate insight
+    if (data.conversion_rate > 50) {
+      items.push("Taxa de conversão acima de 50% — excelente engajamento");
+    }
+
+    // Response rate insight
+    if (data.response_rate > 0) {
+      items.push(`${data.response_rate}% dos pacientes responderam às mensagens`);
+    }
+
+    // Returned patients
+    if (data.funnel && data.funnel.returned > 0) {
+      items.push(`${data.funnel.returned} paciente${data.funnel.returned !== 1 ? "s" : ""} já retornaram para novo procedimento`);
+    }
+
+    // Potential revenue
+    if (data.potential_revenue > 0) {
+      items.push(`${formatCurrency(data.potential_revenue)} em receita potencial identificada`);
+    }
+
+    return items.slice(0, 5);
+  }, [data]);
 
   const funnel = data?.funnel;
   const funnelSteps = funnel
@@ -141,46 +178,66 @@ export default function RoiPage() {
         )}
       </div>
 
-      {/* Funil de Conversão — vertical bars */}
+      {/* Funil de Conversão + Insights Inteligentes */}
       {funnel && (
-        <div className="card-elevated animate-fade-up delay-300 rounded-xl overflow-hidden">
-          <div className="px-6 py-4 border-b" style={{ borderColor: "var(--border)" }}>
-            <h2 className="text-[15px] font-semibold" style={{ color: "var(--brown-deep)" }}>Funil de Conversão</h2>
-          </div>
-          <div className="p-6">
-            <div className="flex items-end justify-center gap-6 sm:gap-10" style={{ minHeight: BAR_MAX_HEIGHT + 60 }}>
-              {funnelSteps.map((step) => {
-                const barHeight = Math.max((step.value / maxFunnel) * BAR_MAX_HEIGHT, BAR_MIN_HEIGHT);
-                return (
-                  <div key={step.label} className="flex flex-col items-center gap-2" style={{ width: 64 }}>
-                    {/* Value badge */}
-                    <span
-                      className="text-sm font-bold tabular-nums"
-                      style={{ color: step.color }}
-                    >
-                      {step.value}
-                    </span>
-                    {/* Vertical bar */}
-                    <div
-                      className="w-10 rounded-t-lg transition-all duration-500"
-                      style={{
-                        height: barHeight,
-                        background: step.color,
-                        opacity: step.value === 0 ? 0.35 : 1,
-                      }}
-                    />
-                    {/* Label */}
-                    <span
-                      className="text-[11px] font-medium text-center leading-tight"
-                      style={{ color: "var(--muted-foreground)" }}
-                    >
-                      {step.label}
-                    </span>
-                  </div>
-                );
-              })}
+        <div className="grid lg:grid-cols-[2fr_1fr] gap-4">
+          {/* Funnel card */}
+          <div className="card-elevated animate-fade-up delay-300 rounded-xl overflow-hidden">
+            <div className="px-6 py-4 border-b" style={{ borderColor: "var(--border)" }}>
+              <h2 className="text-[15px] font-semibold" style={{ color: "var(--brown-deep)" }}>Funil de Conversão</h2>
+            </div>
+            <div className="p-6">
+              <div className="flex items-end justify-center gap-6 sm:gap-10" style={{ minHeight: BAR_MAX_HEIGHT + 60 }}>
+                {funnelSteps.map((step) => {
+                  const barHeight = Math.max((step.value / maxFunnel) * BAR_MAX_HEIGHT, BAR_MIN_HEIGHT);
+                  return (
+                    <div key={step.label} className="flex flex-col items-center gap-2" style={{ width: 64 }}>
+                      {/* Value badge */}
+                      <span
+                        className="text-sm font-bold tabular-nums"
+                        style={{ color: step.color }}
+                      >
+                        {step.value}
+                      </span>
+                      {/* Vertical bar */}
+                      <div
+                        className="w-10 rounded-t-lg transition-all duration-500"
+                        style={{
+                          height: barHeight,
+                          background: step.color,
+                          opacity: step.value === 0 ? 0.35 : 1,
+                        }}
+                      />
+                      {/* Label */}
+                      <span
+                        className="text-[11px] font-medium text-center leading-tight"
+                        style={{ color: "var(--muted-foreground)" }}
+                      >
+                        {step.label}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
+
+          {/* Insights card */}
+          {insights.length > 0 && (
+            <div className="card-elevated rounded-xl overflow-hidden p-5 space-y-4 animate-fade-up delay-300">
+              <h3 className="text-sm font-semibold" style={{ color: "var(--brown-deep)" }}>
+                Insights Inteligentes
+              </h3>
+              <div className="space-y-3">
+                {insights.map((insight, i) => (
+                  <div key={i} className="flex gap-2 items-start">
+                    <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0" style={{ color: "var(--green)" }} />
+                    <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>{insight}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

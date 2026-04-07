@@ -181,12 +181,44 @@ function CarouselEditor({
             placeholder="Texto do card"
             className="text-sm h-9"
           />
-          <Input
-            value={item.image || ""}
-            onChange={(e) => updateItem(i, "image", e.target.value)}
-            placeholder="URL da imagem (opcional)"
-            className="text-sm h-9"
-          />
+          <div className="space-y-2">
+            <Input
+              value={item.image || ""}
+              onChange={(e) => updateItem(i, "image", e.target.value)}
+              placeholder="URL da imagem ou faça upload abaixo"
+              className="text-sm h-9"
+            />
+            <div className="flex items-center gap-3">
+              <label
+                className="px-3 py-1.5 rounded-lg text-[11px] font-semibold cursor-pointer transition-colors"
+                style={{ background: "var(--muted)", color: "var(--muted-foreground)", border: "1px solid var(--border)" }}
+              >
+                Fazer upload
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                      updateItem(i, "image", reader.result as string);
+                    };
+                    reader.readAsDataURL(file);
+                  }}
+                />
+              </label>
+              {item.image && (
+                <img
+                  src={item.image}
+                  alt="Preview"
+                  className="h-10 w-10 rounded object-cover"
+                  style={{ border: "1px solid var(--border)" }}
+                />
+              )}
+            </div>
+          </div>
           <ButtonEditor buttons={item.buttons} onChange={(btns) => updateItemButtons(i, btns)} />
         </div>
       ))}

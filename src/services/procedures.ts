@@ -13,6 +13,10 @@ export async function updateProcedureType(id: string, data: ProcedureTypeUpdate)
   return apiFetch<ProcedureType>(`/procedure-types/${id}`, { method: "PATCH", body: JSON.stringify(data) });
 }
 
+export async function deleteProcedureType(id: string) {
+  return apiFetch<void>(`/procedure-types/${id}`, { method: "DELETE" });
+}
+
 export async function getProcedureRecords(patientId?: string) {
   const qs = patientId ? `?patient_id=${patientId}` : "";
   return apiFetch<ProcedureRecord[]>(`/procedure-records${qs}`);

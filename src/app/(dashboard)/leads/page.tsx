@@ -98,6 +98,9 @@ function LeadCard({ lead, onMove }: { lead: Lead; onMove: (id: string, status: s
 export default function LeadsPage() {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
+  const [filterProcedure, setFilterProcedure] = useState("");
+  const [filterDateFrom, setFilterDateFrom] = useState("");
+  const [filterDateTo, setFilterDateTo] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: ["leads", search],
@@ -109,8 +112,23 @@ export default function LeadsPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["leads"] }),
   });
 
-  const items = data?.items || [];
+  const rawItems = data?.items || [];
   const summary = data?.summary;
+
+  // Unique procedure names for the filter dropdown
+  const procedureNames = Array.from(new Set(rawItems.map((l) => l.procedure_name).filter(Boolean))).sort();
+
+  // Client-side filtering
+  const items = rawItems.filter((lead) => {
+    if (filterProcedure && lead.procedure_name !== filterProcedure) return false;
+    if (filterDateFrom || filterDateTo) {
+      if (!lead.responded_at) return false;
+      const respondedDate = lead.responded_at.slice(0, 10); // YYYY-MM-DD
+      if (filterDateFrom && respondedDate < filterDateFrom) return false;
+      if (filterDateTo && respondedDate > filterDateTo) return false;
+    }
+    return true;
+  });
 
   function handleMove(id: string, status: string) {
     updateMut.mutate({ id, status });
@@ -125,14 +143,47 @@ export default function LeadsPage() {
             Pacientes que demonstraram interesse em retornar
           </p>
         </div>
-        <div className="relative min-w-[220px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar paciente..."
-            className="pl-9 rounded-lg text-sm h-9"
-          />
+        <div className="flex items-center gap-3">
+          <div className="relative min-w-[220px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar paciente..."
+              className="pl-9 rounded-lg text-sm h-9"
+            />
+          </div>
+          <select
+            value={filterProcedure}
+            onChange={(e) => setFilterProcedure(e.target.value)}
+            className="h-9 rounded-lg text-sm px-3 bg-white min-w-[180px]"
+            style={{ border: "1px solid var(--border)", color: filterProcedure ? "inherit" : "var(--muted-foreground)" }}
+          >
+            <option value="">Procedimento</option>
+            {procedureNames.map((name) => (
+              <option key={name} value={name}>{name}</option>
+            ))}
+          </select>
+          <div className="flex items-center gap-1.5">
+            <label className="text-xs whitespace-nowrap" style={{ color: "var(--muted-foreground)" }}>De</label>
+            <input
+              type="date"
+              value={filterDateFrom}
+              onChange={(e) => setFilterDateFrom(e.target.value)}
+              className="h-9 rounded-lg text-sm px-2 bg-white"
+              style={{ border: "1px solid var(--border)", color: filterDateFrom ? "inherit" : "var(--muted-foreground)" }}
+            />
+          </div>
+          <div className="flex items-center gap-1.5">
+            <label className="text-xs whitespace-nowrap" style={{ color: "var(--muted-foreground)" }}>Até</label>
+            <input
+              type="date"
+              value={filterDateTo}
+              onChange={(e) => setFilterDateTo(e.target.value)}
+              className="h-9 rounded-lg text-sm px-2 bg-white"
+              style={{ border: "1px solid var(--border)", color: filterDateTo ? "inherit" : "var(--muted-foreground)" }}
+            />
+          </div>
         </div>
       </div>
 
@@ -144,7 +195,7 @@ export default function LeadsPage() {
             ))}
           </div>
         </div>
-      ) : items.length === 0 && !search ? (
+      ) : rawItems.length === 0 && !search ? (
         <div className="py-16 text-center animate-fade-up rounded-xl" style={{ background: "var(--cream)", border: "1px solid var(--border)" }}>
           <UserCheck className="h-8 w-8 mx-auto mb-3" style={{ color: "var(--border)" }} />
           <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>Nenhum lead ainda. Quando pacientes responderem "Sim", aparecerão aqui.</p>
