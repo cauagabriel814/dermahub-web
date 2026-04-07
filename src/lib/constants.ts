@@ -26,11 +26,11 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/patients", label: "Pacientes", icon: Users },
   { href: "/procedures/new", label: "Registrar Procedimento", icon: ClipboardList },
   { href: "/recalls", label: "Recalls", icon: BellRing },
-  { href: "/automations", label: "Automacoes", icon: Zap },
+  { href: "/automations", label: "Automações", icon: Zap },
   { href: "/messages", label: "Mensagens", icon: MessageSquare },
   { href: "/settings/message-templates", label: "Modelos", icon: FileText },
   { href: "/settings/procedure-types", label: "Procedimentos", icon: Settings },
-  { href: "/settings/users", label: "Usuarios", icon: UserCog, adminOnly: true },
+  { href: "/settings/users", label: "Usuários", icon: UserCog, adminOnly: true },
 ];
 
 export const APP_NAME = "DermaHub";

@@ -1,12 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { Search, UserPlus, ChevronRight } from "lucide-react";
+import { Search, UserPlus, ChevronRight, ArrowUpDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { getPatients } from "@/services/patients";
+
+type SortOption = "name-asc" | "name-desc" | "proc-desc" | "proc-asc";
+
+const SORT_LABELS: Record<SortOption, string> = {
+  "name-asc": "Nome (A\u2013Z)",
+  "name-desc": "Nome (Z\u2013A)",
+  "proc-desc": "Último proced. (recente)",
+  "proc-asc": "Último proced. (antigo)",
+};
 
 const AVATAR_GRADIENTS = [
   "linear-gradient(135deg, oklch(0.429 0.0306 72.6), oklch(0.327 0.0736 48.0))",
@@ -38,11 +47,39 @@ function PatientAvatar({ name }: { name: string }) {
 
 export default function PatientsPage() {
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<SortOption>("name-asc");
 
   const { data, isLoading } = useQuery({
     queryKey: ["patients", search],
     queryFn: () => getPatients({ search: search || undefined, limit: 100 }),
   });
+
+  const sortedItems = useMemo(() => {
+    if (!data?.items) return [];
+    const items = [...data.items];
+    switch (sort) {
+      case "name-asc":
+        return items.sort((a, b) => a.full_name.localeCompare(b.full_name, "pt-BR"));
+      case "name-desc":
+        return items.sort((a, b) => b.full_name.localeCompare(a.full_name, "pt-BR"));
+      case "proc-desc":
+        return items.sort((a, b) => {
+          if (!a.last_procedure_date && !b.last_procedure_date) return 0;
+          if (!a.last_procedure_date) return 1;
+          if (!b.last_procedure_date) return -1;
+          return b.last_procedure_date.localeCompare(a.last_procedure_date);
+        });
+      case "proc-asc":
+        return items.sort((a, b) => {
+          if (!a.last_procedure_date && !b.last_procedure_date) return 0;
+          if (!a.last_procedure_date) return 1;
+          if (!b.last_procedure_date) return -1;
+          return a.last_procedure_date.localeCompare(b.last_procedure_date);
+        });
+      default:
+        return items;
+    }
+  }, [data?.items, sort]);
 
   return (
     <div className="space-y-6">
@@ -65,16 +102,42 @@ export default function PatientsPage() {
         </Link>
       </div>
 
-      {/* Search */}
-      <div className="relative max-w-sm animate-fade-up delay-75">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "oklch(0.596 0.036 57.9)" }} />
-        <Input
-          placeholder="Buscar por nome ou telefone..."
-          className="pl-10 rounded-xl bg-white border text-sm"
-          style={{ borderColor: "oklch(0.878 0.015 58)", height: "2.5rem" }}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      {/* Search + Sort */}
+      <div className="flex items-center gap-3 animate-fade-up delay-75 flex-wrap">
+        <div className="relative max-w-sm flex-1 min-w-[200px]">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "oklch(0.596 0.036 57.9)" }} />
+          <Input
+            placeholder="Buscar por nome ou telefone..."
+            className="pl-10 rounded-xl bg-white border text-sm"
+            style={{ borderColor: "oklch(0.878 0.015 58)", height: "2.5rem" }}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
+        <div className="relative">
+          <ArrowUpDown
+            className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 pointer-events-none"
+            style={{ color: "oklch(0.596 0.036 57.9)" }}
+          />
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as SortOption)}
+            className="appearance-none rounded-xl bg-white border text-sm pl-9 pr-8 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1"
+            style={{
+              borderColor: "oklch(0.878 0.015 58)",
+              height: "2.5rem",
+              color: "oklch(0.429 0.0306 72.6)",
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23998a7a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "right 0.75rem center",
+            }}
+          >
+            {(Object.entries(SORT_LABELS) as [SortOption, string][]).map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Table */}
@@ -98,7 +161,7 @@ export default function PatientsPage() {
               ))}
             </div>
           </div>
-        ) : data?.items.length === 0 ? (
+        ) : sortedItems.length === 0 ? (
           <div className="py-16 text-center">
             <p className="text-sm" style={{ color: "oklch(0.596 0.036 57.9)" }}>Nenhuma paciente encontrada.</p>
           </div>
@@ -121,47 +184,59 @@ export default function PatientsPage() {
             </div>
 
             {/* Rows */}
-            {data?.items.map((p, i) => (
-              <Link
-                key={p.id}
-                href={`/patients/${p.id}`}
-                className="group grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 items-center px-5 py-3.5 transition-all duration-150 table-row-hover"
-                style={{
-                  borderBottom: i < (data?.items.length ?? 0) - 1 ? "1px solid oklch(0.920 0.010 60)" : "none",
-                }}
-              >
-                {/* Name + avatar */}
-                <div className="flex items-center gap-3 min-w-0">
-                  <PatientAvatar name={p.full_name} />
-                  <span className="text-sm font-medium truncate" style={{ color: "oklch(0.250 0.026 50.8)" }}>
-                    {p.full_name}
+            {sortedItems.map((p, i) => {
+              const isFutureProc = p.last_procedure_date
+                ? new Date(p.last_procedure_date + "T00:00:00") > new Date()
+                : false;
+
+              return (
+                <Link
+                  key={p.id}
+                  href={`/patients/${p.id}`}
+                  className="group grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 items-center px-5 py-3.5 transition-all duration-150 table-row-hover"
+                  style={{
+                    borderBottom: i < sortedItems.length - 1 ? "1px solid oklch(0.920 0.010 60)" : "none",
+                  }}
+                >
+                  {/* Name + avatar */}
+                  <div className="flex items-center gap-3 min-w-0">
+                    <PatientAvatar name={p.full_name} />
+                    <span className="text-sm font-medium truncate" style={{ color: "oklch(0.250 0.026 50.8)" }}>
+                      {p.full_name}
+                    </span>
+                  </div>
+
+                  {/* Phone */}
+                  <span className="hidden md:block text-sm" style={{ color: "oklch(0.596 0.036 57.9)" }}>
+                    {p.phone}
                   </span>
-                </div>
 
-                {/* Phone */}
-                <span className="hidden md:block text-sm" style={{ color: "oklch(0.596 0.036 57.9)" }}>
-                  {p.phone}
-                </span>
+                  {/* Email */}
+                  <span className="hidden lg:block text-sm" style={{ color: "oklch(0.596 0.036 57.9)" }}>
+                    {p.email ?? "—"}
+                  </span>
 
-                {/* Email */}
-                <span className="hidden lg:block text-sm" style={{ color: "oklch(0.596 0.036 57.9)" }}>
-                  {p.email ?? "—"}
-                </span>
+                  {/* Last procedure — green if scheduled (future date) */}
+                  <span
+                    className="text-sm"
+                    style={{
+                      color: isFutureProc ? "var(--green)" : "oklch(0.596 0.036 57.9)",
+                      fontWeight: isFutureProc ? 600 : undefined,
+                    }}
+                  >
+                    {p.last_procedure_date
+                      ? new Date(p.last_procedure_date + "T00:00:00").toLocaleDateString("pt-BR")
+                      : "—"}
+                  </span>
 
-                {/* Last procedure */}
-                <span className="text-sm" style={{ color: "oklch(0.596 0.036 57.9)" }}>
-                  {p.last_procedure_date
-                    ? new Date(p.last_procedure_date + "T00:00:00").toLocaleDateString("pt-BR")
-                    : "—"}
-                </span>
-
-                {/* Arrow */}
-                <ChevronRight
-                  className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
-                  style={{ color: "oklch(0.844 0.024 55.1)" }}
-                />
-              </Link>
-            ))}
+                  {/* Arrow */}
+                  <ChevronRight
+                    className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
+                    style={{ color: "oklch(0.844 0.024 55.1)" }}
+                  />
+                </Link>
+              );
+            })}
           </>
         )}
       </div>

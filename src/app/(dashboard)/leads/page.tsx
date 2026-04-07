@@ -147,7 +147,7 @@ export default function LeadsPage() {
       ) : items.length === 0 && !search ? (
         <div className="py-16 text-center animate-fade-up rounded-xl" style={{ background: "var(--cream)", border: "1px solid var(--border)" }}>
           <UserCheck className="h-8 w-8 mx-auto mb-3" style={{ color: "var(--border)" }} />
-          <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>Nenhum lead ainda. Quando pacientes responderem "Sim", aparecerao aqui.</p>
+          <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>Nenhum lead ainda. Quando pacientes responderem "Sim", aparecerão aqui.</p>
         </div>
       ) : (
         <div className="grid grid-cols-4 gap-4 animate-fade-up delay-100" style={{ minHeight: "60vh" }}>

@@ -50,7 +50,7 @@ function PreviewContent({ content }: { content: string }) {
     .replace(/{data}/g, "20/03/2026");
   return (
     <p className="text-xs italic mt-2 whitespace-pre-wrap" style={{ color: "var(--muted-foreground)" }}>
-      {rendered || "Pre-visualizacao aparecera aqui..."}
+      {rendered || "Pré-visualização aparecerá aqui..."}
     </p>
   );
 }
@@ -277,7 +277,7 @@ export default function MessageTemplatesPage() {
         <div>
           <h1 className="page-title">Modelos de Mensagem</h1>
           <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
-            Crie mensagens com variaveis dinamicas para WhatsApp
+            Crie mensagens com variáveis dinâmicas para WhatsApp
           </p>
         </div>
         {!editing && (
@@ -298,7 +298,7 @@ export default function MessageTemplatesPage() {
         style={{ background: "var(--cream)", border: "1px solid var(--border)" }}
       >
         <span className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>
-          Variaveis disponiveis:
+          Variáveis disponíveis:
         </span>
         {VARS.map((v) => <VarBadge key={v} v={v} onClick={() => insertVar(v)} />)}
       </div>
@@ -351,7 +351,7 @@ export default function MessageTemplatesPage() {
             <Input
               value={editing.name}
               onChange={(e) => setEditing({ ...editing, name: e.target.value })}
-              placeholder="Ex: Pos-procedimento D+3"
+              placeholder="Ex: Pós-procedimento D+3"
               className="rounded-lg"
             />
           </div>
@@ -445,7 +445,7 @@ export default function MessageTemplatesPage() {
               <span>Modelo</span>
               <span>Tipo</span>
               <span>Status</span>
-              <span>Acoes</span>
+              <span>Ações</span>
             </div>
             {templates.map((t, i) => (
               <div

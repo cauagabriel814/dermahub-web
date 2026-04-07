@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, ToggleLeft, ToggleRight, Zap } from "lucide-react";
+import { Plus, ToggleLeft, ToggleRight, Zap, Pencil, Trash2, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getProcedureTypes } from "@/services/procedures";
-import { getMessageTemplates, getAutomationRules, createAutomationRule, updateAutomationRule } from "@/services/messaging";
+import { getMessageTemplates, getAutomationRules, createAutomationRule, updateAutomationRule, deleteAutomationRule } from "@/services/messaging";
 import type { AutomationRuleCreate } from "@/types/api";
 
 type EventTypeKey = "post_procedure" | "recall";
@@ -18,6 +18,13 @@ const EVENT_LABELS: Record<EventTypeKey, string> = {
 
 interface NewRuleState {
   procedure_type_id: string;
+  name: string;
+  trigger_offset_days: string;
+  message_template_id: string;
+  event_type: EventTypeKey;
+}
+
+interface EditRuleState {
   name: string;
   trigger_offset_days: string;
   message_template_id: string;
@@ -36,6 +43,8 @@ export default function AutomationsPage() {
   const qc = useQueryClient();
   const [creating, setCreating] = useState(false);
   const [newRule, setNewRule] = useState<NewRuleState>(defaultNew());
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editState, setEditState] = useState<EditRuleState>({ name: "", trigger_offset_days: "3", message_template_id: "", event_type: "post_procedure" });
 
   const { data: procedureTypes = [] } = useQuery({
     queryKey: ["procedure-types"],
@@ -64,6 +73,14 @@ export default function AutomationsPage() {
   const updateMut = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Parameters<typeof updateAutomationRule>[1] }) =>
       updateAutomationRule(id, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["automation-rules"] });
+      setEditingId(null);
+    },
+  });
+
+  const deleteMut = useMutation({
+    mutationFn: (id: string) => deleteAutomationRule(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["automation-rules"] }),
   });
 
@@ -76,6 +93,34 @@ export default function AutomationsPage() {
       message_template_id: newRule.message_template_id,
       event_type: newRule.event_type,
     });
+  }
+
+  function startEdit(rule: typeof rules[number]) {
+    setEditingId(rule.id);
+    setEditState({
+      name: rule.name,
+      trigger_offset_days: String(rule.trigger_offset_days),
+      message_template_id: rule.message_template_id,
+      event_type: rule.event_type as EventTypeKey,
+    });
+  }
+
+  function handleEditSave() {
+    if (!editingId || !editState.name || !editState.message_template_id) return;
+    updateMut.mutate({
+      id: editingId,
+      data: {
+        name: editState.name,
+        trigger_offset_days: Number(editState.trigger_offset_days),
+        message_template_id: editState.message_template_id,
+        event_type: editState.event_type,
+      },
+    });
+  }
+
+  function handleDelete(ruleId: string) {
+    if (!window.confirm("Tem certeza?")) return;
+    deleteMut.mutate(ruleId);
   }
 
   // Group rules by procedure_type_id
@@ -241,40 +286,138 @@ export default function AutomationsPage() {
               </div>
               {ptRules.sort((a, b) => a.sort_order - b.sort_order).map((rule, i) => (
                 <div key={rule.id}
-                  className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 items-center px-5 py-3.5"
                   style={{ borderBottom: i < ptRules.length - 1 ? "1px solid var(--muted)" : "none" }}
                 >
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium" style={{ color: "var(--brown-deep)" }}>{rule.name}</p>
-                    <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>
-                      {tplMap[rule.message_template_id] ?? rule.message_template_id}
-                    </p>
-                  </div>
-                  <span className="text-xs px-2.5 py-0.5 rounded-full"
-                    style={{ background: "var(--green-muted)", color: "var(--green)" }}>
-                    {EVENT_LABELS[rule.event_type as EventTypeKey]}
-                  </span>
-                  <span className="text-xs font-medium font-mono"
-                    style={{ color: "var(--green)" }}>
-                    D+{rule.trigger_offset_days}
-                  </span>
-                  <span className="text-xs px-2.5 py-0.5 rounded-full"
-                    style={rule.active
-                      ? { background: "var(--green-muted)", color: "var(--green)" }
-                      : { background: "var(--muted)", color: "var(--muted-foreground)" }
-                    }
-                  >
-                    {rule.active ? "Ativo" : "Inativo"}
-                  </span>
-                  <button
-                    onClick={() => updateMut.mutate({ id: rule.id, data: { active: !rule.active } })}
-                    className="p-1.5 rounded-lg transition-colors hover:bg-orange-50"
-                  >
-                    {rule.active
-                      ? <ToggleRight className="h-5 w-5" style={{ color: "var(--green)" }} />
-                      : <ToggleLeft className="h-5 w-5" style={{ color: "var(--border)" }} />
-                    }
-                  </button>
+                  {editingId === rule.id ? (
+                    /* ---- Inline edit form ---- */
+                    <div className="px-5 py-4 space-y-3"
+                      style={{ background: "oklch(0.97 0.005 55 / 0.6)" }}
+                    >
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div>
+                          <label className="text-xs font-medium uppercase tracking-widest mb-1 block" style={{ color: "var(--muted-foreground)" }}>
+                            Nome
+                          </label>
+                          <Input
+                            value={editState.name}
+                            onChange={(e) => setEditState({ ...editState, name: e.target.value })}
+                            className="rounded-xl h-9 text-sm"
+                            style={{ borderColor: "var(--border)" }}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium uppercase tracking-widest mb-1 block" style={{ color: "var(--muted-foreground)" }}>
+                            Tipo de evento
+                          </label>
+                          <select
+                            value={editState.event_type}
+                            onChange={(e) => setEditState({ ...editState, event_type: e.target.value as EventTypeKey })}
+                            className="w-full h-9 px-3 rounded-xl text-sm border focus:outline-none"
+                            style={{ borderColor: "var(--border)", color: "oklch(0.250 0.026 50.8)", background: "var(--cream)" }}
+                          >
+                            <option value="post_procedure">Pós-procedimento</option>
+                            <option value="recall">Recall</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium uppercase tracking-widest mb-1 block" style={{ color: "var(--muted-foreground)" }}>
+                            Disparar em D+
+                          </label>
+                          <Input
+                            type="number"
+                            min={0}
+                            value={editState.trigger_offset_days}
+                            onChange={(e) => setEditState({ ...editState, trigger_offset_days: e.target.value })}
+                            className="rounded-xl h-9 text-sm"
+                            style={{ borderColor: "var(--border)" }}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium uppercase tracking-widest mb-1 block" style={{ color: "var(--muted-foreground)" }}>
+                            Modelo de mensagem
+                          </label>
+                          <select
+                            value={editState.message_template_id}
+                            onChange={(e) => setEditState({ ...editState, message_template_id: e.target.value })}
+                            className="w-full h-9 px-3 rounded-xl text-sm border focus:outline-none"
+                            style={{ borderColor: "var(--border)", color: "oklch(0.250 0.026 50.8)", background: "var(--cream)" }}
+                          >
+                            <option value="">Selecione um modelo...</option>
+                            {templates.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+                          </select>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleEditSave}
+                          disabled={updateMut.isPending || !editState.name || !editState.message_template_id}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
+                          style={{ background: "var(--green)", color: "#fff" }}
+                        >
+                          <Check className="h-3.5 w-3.5" />
+                          {updateMut.isPending ? "Salvando..." : "Salvar"}
+                        </button>
+                        <button
+                          onClick={() => setEditingId(null)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors hover:bg-orange-50"
+                          style={{ color: "var(--muted-foreground)" }}
+                        >
+                          <X className="h-3.5 w-3.5" />
+                          Cancelar
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    /* ---- Normal display row ---- */
+                    <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto_auto] gap-3 items-center px-5 py-3.5">
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium" style={{ color: "var(--brown-deep)" }}>{rule.name}</p>
+                        <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>
+                          {tplMap[rule.message_template_id] ?? rule.message_template_id}
+                        </p>
+                      </div>
+                      <span className="text-xs px-2.5 py-0.5 rounded-full"
+                        style={{ background: "var(--green-muted)", color: "var(--green)" }}>
+                        {EVENT_LABELS[rule.event_type as EventTypeKey]}
+                      </span>
+                      <span className="text-xs font-medium font-mono"
+                        style={{ color: "var(--green)" }}>
+                        D+{rule.trigger_offset_days}
+                      </span>
+                      <span className="text-xs px-2.5 py-0.5 rounded-full"
+                        style={rule.active
+                          ? { background: "var(--green-muted)", color: "var(--green)" }
+                          : { background: "var(--muted)", color: "var(--muted-foreground)" }
+                        }
+                      >
+                        {rule.active ? "Ativo" : "Inativo"}
+                      </span>
+                      <button
+                        onClick={() => startEdit(rule)}
+                        className="p-1.5 rounded-lg transition-colors hover:bg-orange-50"
+                        title="Editar regra"
+                      >
+                        <Pencil className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(rule.id)}
+                        disabled={deleteMut.isPending}
+                        className="p-1.5 rounded-lg transition-colors hover:bg-red-50"
+                        title="Excluir regra"
+                      >
+                        <Trash2 className="h-4 w-4" style={{ color: "oklch(0.55 0.15 27)" }} />
+                      </button>
+                      <button
+                        onClick={() => updateMut.mutate({ id: rule.id, data: { active: !rule.active } })}
+                        className="p-1.5 rounded-lg transition-colors hover:bg-orange-50"
+                      >
+                        {rule.active
+                          ? <ToggleRight className="h-5 w-5" style={{ color: "var(--green)" }} />
+                          : <ToggleLeft className="h-5 w-5" style={{ color: "var(--border)" }} />
+                        }
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

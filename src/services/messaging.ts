@@ -45,6 +45,9 @@ export async function createAutomationRule(data: AutomationRuleCreate) {
 export async function updateAutomationRule(id: string, data: AutomationRuleUpdate) {
   return apiFetch<AutomationRule>(`/automations/${id}`, { method: "PATCH", body: JSON.stringify(data) });
 }
+export async function deleteAutomationRule(id: string) {
+  return apiFetch<void>(`/automations/${id}`, { method: "DELETE" });
+}
 
 // --- Scheduled Messages ---
 export async function getScheduledMessages(params?: { patient_id?: string; status?: MessageStatus; skip?: number; limit?: number }) {

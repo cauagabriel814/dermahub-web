@@ -11,8 +11,8 @@ import { Label } from "@/components/ui/label";
 import { login } from "@/services/auth";
 
 const loginSchema = z.object({
-  email: z.string().email("Email invalido"),
-  password: z.string().min(1, "Senha e obrigatoria"),
+  email: z.string().email("Email inválido"),
+  password: z.string().min(1, "Senha é obrigatória"),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
@@ -35,7 +35,7 @@ export default function LoginPage() {
       await login(data);
       router.push("/");
     } catch {
-      setError("Credenciais invalidas");
+      setError("Credenciais inválidas");
     }
   }
 
@@ -89,7 +89,7 @@ export default function LoginPage() {
               DermaHub
             </h1>
             <p className="text-[11px] tracking-[0.2em] uppercase mt-1.5 font-medium" style={{ color: "oklch(0.520 0.015 60)" }}>
-              Area Restrita
+              Área Restrita
             </p>
           </div>
 

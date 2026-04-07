@@ -51,9 +51,9 @@ export default function UsersPage() {
     <div className="space-y-6">
       <div className="flex items-end justify-between animate-fade-up">
         <div>
-          <h1 className="page-title">Usuarios</h1>
+          <h1 className="page-title">Usuários</h1>
           <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
-            Gerencie os usuarios da clinica
+            Gerencie os usuários da clínica
           </p>
         </div>
         {!editing && (
@@ -63,7 +63,7 @@ export default function UsersPage() {
             style={{ color: "var(--primary-foreground)", border: "none" }}
           >
             <Plus className="h-4 w-4" />
-            Novo Usuario
+            Novo Usuário
           </Button>
         )}
       </div>
@@ -71,7 +71,7 @@ export default function UsersPage() {
       {editing && (
         <div className="animate-fade-up rounded-xl p-6 space-y-4" style={{ background: "var(--cream)", border: "1px solid oklch(0.520 0.120 45 / 0.2)", boxShadow: "var(--shadow-md)" }}>
           <h2 className="text-base font-semibold" style={{ color: "var(--brown-deep)" }}>
-            {editing.id ? "Editar Usuario" : "Novo Usuario"}
+            {editing.id ? "Editar Usuário" : "Novo Usuário"}
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
@@ -135,15 +135,15 @@ export default function UsersPage() {
         ) : users.length === 0 ? (
           <div className="py-16 text-center">
             <UserCog className="h-8 w-8 mx-auto mb-3" style={{ color: "var(--border)" }} />
-            <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>Nenhum usuario cadastrado.</p>
+            <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>Nenhum usuário cadastrado.</p>
           </div>
         ) : (
           <>
             <div className="grid grid-cols-[1fr_auto_auto_auto] gap-4 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ borderBottom: "1px solid var(--border)", background: "var(--muted)", color: "var(--muted-foreground)" }}>
-              <span>Usuario</span>
+              <span>Usuário</span>
               <span>Perfil</span>
               <span>Criado em</span>
-              <span>Acoes</span>
+              <span>Ações</span>
             </div>
             {users.map((u, i) => (
               <div key={u.id} className="grid grid-cols-[1fr_auto_auto_auto] gap-4 items-center px-5 py-4 table-row-hover" style={{ borderBottom: i < users.length - 1 ? "1px solid var(--muted)" : "none" }}>
