@@ -169,7 +169,7 @@ export default function RecallsPage() {
         ) : (
           <>
             <div
-              className="grid grid-cols-[70px_1fr_140px_1fr_90px_44px] gap-3 px-5 py-3 text-xs font-medium uppercase tracking-widest"
+              className="grid grid-cols-[70px_1fr_200px_1fr_90px_44px] gap-3 px-5 py-3 text-xs font-medium uppercase tracking-widest"
               style={{ borderBottom: "1px solid oklch(0.878 0.015 58)", background: "oklch(0.975 0.005 60)", color: "oklch(0.596 0.036 57.9)" }}
             >
               <span>Data</span>
@@ -186,7 +186,7 @@ export default function RecallsPage() {
               return (
                 <div
                   key={msg.id}
-                  className="grid grid-cols-[70px_1fr_140px_1fr_90px_44px] gap-3 items-center px-5 py-3.5"
+                  className="grid grid-cols-[70px_1fr_200px_1fr_90px_44px] gap-3 items-center px-5 py-3.5"
                   style={{ borderBottom: i < messages.length - 1 ? "1px solid oklch(0.920 0.010 60)" : "none" }}
                 >
                   {/* Date */}
