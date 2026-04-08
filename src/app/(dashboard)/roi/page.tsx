@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { TrendingUp, DollarSign, MessageSquare, Target, Star, CheckCircle2 } from "lucide-react";
+import { TrendingUp, DollarSign, MessageSquare, Target, Star, Zap, Users, BadgeDollarSign, RotateCcw } from "lucide-react";
 import { getRoiDashboard } from "@/services/messaging";
 
 const PERIODS = [
@@ -24,13 +24,31 @@ function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value / 100);
 }
 
+function diffDays(from: string, to: string): number {
+  const a = new Date(from + "T00:00:00");
+  const b = new Date(to + "T00:00:00");
+  return Math.max(1, Math.ceil((b.getTime() - a.getTime()) / 86400000));
+}
+
 export default function RoiPage() {
   const [period, setPeriod] = useState(30);
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo] = useState("");
   const [rankingTab, setRankingTab] = useState<RankingTab>("revenue");
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["roi-dashboard", period],
-    queryFn: () => getRoiDashboard(period),
+  // If custom dates are set, derive period from them
+  const effectivePeriod = useMemo(() => {
+    if (customFrom && customTo) {
+      return diffDays(customFrom, customTo);
+    }
+    return period;
+  }, [period, customFrom, customTo]);
+
+  const isCustom = !!(customFrom && customTo);
+
+  const { data } = useQuery({
+    queryKey: ["roi-dashboard", effectivePeriod],
+    queryFn: () => getRoiDashboard(effectivePeriod),
   });
 
   /* ---------- Procedimento Destaque ---------- */
@@ -62,38 +80,58 @@ export default function RoiPage() {
     { label: "Taxa de Conversão", value: data ? `${data.conversion_rate}%` : "—", icon: Target, color: "var(--brown-medium)", bg: "oklch(0.420 0.030 50 / 0.08)" },
   ];
 
-  /* ---------- Insights Inteligentes ---------- */
+  /* ---------- Insights Inteligentes (themed) ---------- */
   const insights = useMemo(() => {
     if (!data) return [];
-    const items: string[] = [];
+    const items: { icon: typeof Star; color: string; label: string; text: string }[] = [];
 
-    // Top procedure confirmation rate
     if (data.ranking && data.ranking.length > 0) {
       const top = [...data.ranking].sort((a, b) => b.potential_revenue - a.potential_revenue)[0];
       if (top.sent > 0) {
         const rate = Math.round((top.positive / top.sent) * 100);
-        items.push(`${top.procedure} possui ${rate}% de taxa de confirmação`);
+        items.push({
+          icon: Star,
+          color: "var(--terracotta)",
+          label: "Destaque",
+          text: `O procedimento **${top.procedure}** atingiu **${rate}%** de taxa de confirmação.`,
+        });
       }
     }
 
-    // Conversion rate insight
     if (data.conversion_rate > 50) {
-      items.push("Taxa de conversão acima de 50% — excelente engajamento");
+      items.push({
+        icon: Zap,
+        color: "oklch(0.600 0.090 65)",
+        label: "Engajamento",
+        text: `Taxa de conversão excepcional de **${data.conversion_rate}%** (acima da média de 50%).`,
+      });
     }
 
-    // Response rate insight
-    if (data.response_rate > 0) {
-      items.push(`${data.response_rate}% dos pacientes responderam às mensagens`);
+    if (data.response_rate > 0 && data.funnel) {
+      items.push({
+        icon: Users,
+        color: "var(--brown-deep)",
+        label: "Interação",
+        text: `**${data.response_rate}%** dos pacientes (${data.funnel.responded} de ${data.funnel.sent}) **responderam** ativamente às mensagens.`,
+      });
     }
 
-    // Returned patients
-    if (data.funnel && data.funnel.returned > 0) {
-      items.push(`${data.funnel.returned} paciente${data.funnel.returned !== 1 ? "s" : ""} já retornaram para novo procedimento`);
-    }
-
-    // Potential revenue
     if (data.potential_revenue > 0) {
-      items.push(`${formatCurrency(data.potential_revenue)} em receita potencial identificada`);
+      items.push({
+        icon: BadgeDollarSign,
+        color: "var(--terracotta)",
+        label: "Oportunidade",
+        text: `Identificamos **${formatCurrency(data.potential_revenue)}** em receita potencial a ser convertida.`,
+      });
+    }
+
+    if (data.funnel && data.funnel.returned > 0) {
+      items.push({
+        icon: RotateCcw,
+        color: "var(--green)",
+        label: "Fidelização",
+        text: `**${data.funnel.returned} paciente${data.funnel.returned !== 1 ? "s" : ""}** já **retornou** para realizar um novo procedimento.`,
+      });
     }
 
     return items.slice(0, 5);
@@ -113,10 +151,21 @@ export default function RoiPage() {
   const BAR_MAX_HEIGHT = 180;
   const BAR_MIN_HEIGHT = 20;
 
+  function renderInsightText(text: string) {
+    const parts = text.split(/(\*\*[^*]+\*\*)/);
+    return parts.map((part, i) =>
+      part.startsWith("**") && part.endsWith("**") ? (
+        <strong key={i} style={{ color: "var(--brown-deep)" }}>{part.slice(2, -2)}</strong>
+      ) : (
+        <span key={i}>{part}</span>
+      )
+    );
+  }
+
   return (
     <div className="space-y-8">
       {/* Header + period selector */}
-      <div className="flex items-end justify-between animate-fade-up">
+      <div className="flex items-end justify-between animate-fade-up flex-wrap gap-4">
         <div>
           <h1 className="page-title">ROI da Plataforma</h1>
           <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
@@ -127,9 +176,9 @@ export default function RoiPage() {
           {PERIODS.map((p) => (
             <button
               key={p.value}
-              onClick={() => setPeriod(p.value)}
+              onClick={() => { setPeriod(p.value); setCustomFrom(""); setCustomTo(""); }}
               className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
-              style={period === p.value
+              style={period === p.value && !isCustom
                 ? { background: "var(--terracotta)", color: "var(--primary-foreground)" }
                 : { background: "var(--muted)", color: "var(--muted-foreground)" }
               }
@@ -137,6 +186,32 @@ export default function RoiPage() {
               {p.label}
             </button>
           ))}
+          <div className="flex items-center gap-1.5 ml-1">
+            <input
+              type="date"
+              value={customFrom}
+              onChange={(e) => setCustomFrom(e.target.value)}
+              className="h-8 rounded-lg text-xs px-2 bg-white"
+              style={{ border: `1px solid ${isCustom ? "var(--terracotta)" : "var(--border)"}`, color: customFrom ? "inherit" : "var(--muted-foreground)", width: 130 }}
+            />
+            <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>—</span>
+            <input
+              type="date"
+              value={customTo}
+              onChange={(e) => setCustomTo(e.target.value)}
+              className="h-8 rounded-lg text-xs px-2 bg-white"
+              style={{ border: `1px solid ${isCustom ? "var(--terracotta)" : "var(--border)"}`, color: customTo ? "inherit" : "var(--muted-foreground)", width: 130 }}
+            />
+            {isCustom && (
+              <button
+                onClick={() => { setCustomFrom(""); setCustomTo(""); }}
+                className="text-xs font-semibold px-2 py-1 rounded-lg transition-colors"
+                style={{ color: "oklch(0.540 0.200 25)" }}
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -192,14 +267,9 @@ export default function RoiPage() {
                   const barHeight = Math.max((step.value / maxFunnel) * BAR_MAX_HEIGHT, BAR_MIN_HEIGHT);
                   return (
                     <div key={step.label} className="flex flex-col items-center gap-2" style={{ width: 64 }}>
-                      {/* Value badge */}
-                      <span
-                        className="text-sm font-bold tabular-nums"
-                        style={{ color: step.color }}
-                      >
+                      <span className="text-sm font-bold tabular-nums" style={{ color: step.color }}>
                         {step.value}
                       </span>
-                      {/* Vertical bar */}
                       <div
                         className="w-10 rounded-t-lg transition-all duration-500"
                         style={{
@@ -208,11 +278,7 @@ export default function RoiPage() {
                           opacity: step.value === 0 ? 0.35 : 1,
                         }}
                       />
-                      {/* Label */}
-                      <span
-                        className="text-[11px] font-medium text-center leading-tight"
-                        style={{ color: "var(--muted-foreground)" }}
-                      >
+                      <span className="text-[11px] font-medium text-center leading-tight" style={{ color: "var(--muted-foreground)" }}>
                         {step.label}
                       </span>
                     </div>
@@ -222,17 +288,20 @@ export default function RoiPage() {
             </div>
           </div>
 
-          {/* Insights card */}
+          {/* Insights card — themed with icons */}
           {insights.length > 0 && (
             <div className="card-elevated rounded-xl overflow-hidden p-5 space-y-4 animate-fade-up delay-300">
               <h3 className="text-sm font-semibold" style={{ color: "var(--brown-deep)" }}>
                 Insights Inteligentes
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-3.5">
                 {insights.map((insight, i) => (
-                  <div key={i} className="flex gap-2 items-start">
-                    <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0" style={{ color: "var(--green)" }} />
-                    <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>{insight}</p>
+                  <div key={i} className="flex gap-2.5 items-start">
+                    <insight.icon className="h-4 w-4 mt-0.5 shrink-0" style={{ color: insight.color }} />
+                    <p className="text-xs leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
+                      <span className="font-bold" style={{ color: insight.color }}>{insight.label}:</span>{" "}
+                      {renderInsightText(insight.text)}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -241,7 +310,7 @@ export default function RoiPage() {
         </div>
       )}
 
-      {/* Ranking table with tab filters */}
+      {/* Ranking table */}
       {data?.ranking && data.ranking.length > 0 && (
         <div className="card-elevated animate-fade-up delay-400 rounded-xl overflow-hidden">
           <div className="px-6 py-4 border-b flex items-center justify-between gap-4 flex-wrap" style={{ borderColor: "var(--border)" }}>
