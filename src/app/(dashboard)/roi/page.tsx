@@ -163,7 +163,7 @@ export default function RoiPage() {
               <div className="flex h-10 w-10 items-center justify-center rounded-lg mb-4" style={{ background: "oklch(0.520 0.120 45 / 0.08)" }}>
                 <Star className="h-5 w-5" style={{ color: "var(--terracotta)" }} />
               </div>
-              <p className="stat-number truncate" style={{ color: "var(--brown-deep)" }} title={highlight.procedure}>
+              <p className="text-lg font-bold leading-snug" style={{ color: "var(--brown-deep)", fontFamily: "var(--font-brand)" }} title={highlight.procedure}>
                 {highlight.procedure}
               </p>
               <p className="text-xs font-medium mt-1.5 tracking-wide" style={{ color: "var(--muted-foreground)" }}>

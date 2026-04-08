@@ -143,6 +143,9 @@ export interface ScheduledMessage {
   status: MessageStatus;
   sent_at: string | null;
   failure_reason: string | null;
+  patient_name: string | null;
+  patient_phone: string | null;
+  procedure_name: string | null;
 }
 
 // Dashboard
@@ -158,6 +161,8 @@ export interface MessageLog {
   id: string;
   clinic_id: string;
   patient_id: string;
+  patient_name: string | null;
+  procedure_name: string | null;
   scheduled_message_id: string | null;
   direction: "outbound" | "inbound";
   content: string;
@@ -202,14 +207,18 @@ export interface Lead {
   patient_id: string;
   procedure_name: string;
   procedure_price: number;
+  scheduled_for: string | null;
+  sent_at: string | null;
   responded_at: string | null;
   lead_status: LeadStatus;
   lead_contacted_at: string | null;
+  days_since_contact: number | null;
 }
 export interface LeadsSummary {
   waiting: number;
-  contacted_today: number;
+  contacted: number;
   scheduled: number;
+  returned: number;
 }
 export interface LeadsResponse {
   summary: LeadsSummary;

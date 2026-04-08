@@ -122,6 +122,17 @@ export default function LoginPage() {
               {errors.password && <p className="text-xs text-red-500">{errors.password.message}</p>}
             </div>
 
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => alert("Entre em contato com o administrador para redefinir sua senha.")}
+                className="text-xs font-medium transition-colors hover:underline"
+                style={{ color: "oklch(0.520 0.120 45)" }}
+              >
+                Esqueci a senha
+              </button>
+            </div>
+
             {error && (
               <p className="text-xs text-center font-medium" style={{ color: "oklch(0.540 0.200 25)" }}>{error}</p>
             )}

@@ -10,6 +10,7 @@ import {
   createMessageTemplate,
   updateMessageTemplate,
 } from "@/services/messaging";
+import { apiUpload } from "@/services/api";
 import type { MessageTemplate, MessageType, TemplateButton, CarouselItem, TemplateComponents } from "@/types/api";
 
 const VARS = ["{nome}", "{procedimento}", "{data}"];
@@ -198,14 +199,15 @@ function CarouselEditor({
                   type="file"
                   accept="image/*"
                   className="hidden"
-                  onChange={(e) => {
+                  onChange={async (e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                      updateItem(i, "image", reader.result as string);
-                    };
-                    reader.readAsDataURL(file);
+                    try {
+                      const result = await apiUpload("/uploads", file);
+                      updateItem(i, "image", result.url);
+                    } catch {
+                      alert("Erro ao fazer upload da imagem.");
+                    }
                   }}
                 />
               </label>

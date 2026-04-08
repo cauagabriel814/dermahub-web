@@ -50,9 +50,11 @@ export default function MessagesPage() {
     }
     if (search.trim()) {
       const q = search.trim().toLowerCase();
-      // TODO: filter by patient_name once backend returns it
       result = result.filter(
-        (l) => l.content.toLowerCase().includes(q) || l.patient_id.toLowerCase().includes(q)
+        (l) =>
+          l.content.toLowerCase().includes(q) ||
+          (l.patient_name && l.patient_name.toLowerCase().includes(q)) ||
+          l.patient_id.toLowerCase().includes(q)
       );
     }
     return result;
@@ -216,22 +218,20 @@ export default function MessagesPage() {
                         : "\u2014"}
                     </div>
 
-                    {/* Patient name — TODO: use patient_name from backend once available */}
+                    {/* Patient name */}
                     <p
-                      className="text-sm truncate"
+                      className="text-sm truncate font-medium"
                       style={{ color: "var(--brown-deep)" }}
                     >
-                      <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-                        ID: {log.patient_id.slice(0, 8)}
-                      </span>
+                      {log.patient_name || log.patient_id.slice(0, 8)}
                     </p>
 
-                    {/* Procedure — TODO: use procedure_name from backend once available */}
+                    {/* Procedure */}
                     <p
                       className="text-sm truncate hidden sm:block"
                       style={{ color: "var(--muted-foreground)" }}
                     >
-                      —
+                      {log.procedure_name || "—"}
                     </p>
 
                     {/* Content (truncated) */}

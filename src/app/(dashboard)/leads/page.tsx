@@ -2,21 +2,21 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Phone, ChevronRight, Search, UserCheck, ExternalLink } from "lucide-react";
+import { Phone, ChevronRight, Search, UserCheck, ExternalLink, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { getLeads, updateLead } from "@/services/messaging";
 import type { Lead } from "@/types/api";
 
 const COLUMNS = [
-  { key: "waiting", label: "Aguardando", color: "var(--terracotta)", bg: "oklch(0.520 0.120 45 / 0.06)", border: "oklch(0.520 0.120 45 / 0.20)" },
-  { key: "contacted", label: "Contatado", color: "oklch(0.600 0.090 65)", bg: "oklch(0.600 0.090 65 / 0.06)", border: "oklch(0.600 0.090 65 / 0.20)" },
-  { key: "scheduled", label: "Agendado", color: "var(--green)", bg: "var(--green-muted)", border: "oklch(0.380 0.060 150 / 0.20)" },
-  { key: "returned", label: "Retornou", color: "oklch(0.320 0.060 150)", bg: "oklch(0.380 0.060 150 / 0.10)", border: "oklch(0.380 0.060 150 / 0.25)" },
+  { key: "waiting", label: "Aguardando", desc: "Mensagens agendadas para envio", color: "var(--terracotta)", bg: "oklch(0.520 0.120 45 / 0.06)", border: "oklch(0.520 0.120 45 / 0.20)" },
+  { key: "contacted", label: "Contatado", desc: "Mensagem enviada, aguardando resposta", color: "oklch(0.600 0.090 65)", bg: "oklch(0.600 0.090 65 / 0.06)", border: "oklch(0.600 0.090 65 / 0.20)" },
+  { key: "scheduled", label: "Agendado", desc: "Respondeu e agendou retorno", color: "var(--green)", bg: "var(--green-muted)", border: "oklch(0.380 0.060 150 / 0.20)" },
+  { key: "returned", label: "Retornou", desc: "Compareceu ao procedimento", color: "oklch(0.320 0.060 150)", bg: "oklch(0.380 0.060 150 / 0.10)", border: "oklch(0.380 0.060 150 / 0.25)" },
 ] as const;
 
 const NEXT_STATUS: Record<string, string[]> = {
-  waiting: ["contacted", "scheduled"],
+  waiting: [],
   contacted: ["scheduled"],
   scheduled: [],
   returned: [],
@@ -26,13 +26,33 @@ function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value / 100);
 }
 
+function StaleIndicator({ days }: { days: number | null }) {
+  if (!days || days < 3) return null;
+  const label = days >= 7 ? `+${days}d sem resposta` : `+${days}d`;
+  const color = days >= 7 ? "oklch(0.540 0.200 25)" : "oklch(0.600 0.090 65)";
+  return (
+    <div className="flex items-center gap-1 mt-1">
+      <Clock className="h-3 w-3" style={{ color }} />
+      <span className="text-[10px] font-medium" style={{ color }}>{label}</span>
+    </div>
+  );
+}
+
 function LeadCard({ lead, onMove }: { lead: Lead; onMove: (id: string, status: string) => void }) {
   const col = COLUMNS.find((c) => c.key === lead.lead_status) || COLUMNS[0];
   const nextStatuses = NEXT_STATUS[lead.lead_status] || [];
 
+  const dateLabel = lead.lead_status === "waiting" && lead.scheduled_for
+    ? new Date(lead.scheduled_for).toLocaleDateString("pt-BR")
+    : lead.sent_at
+      ? new Date(lead.sent_at).toLocaleDateString("pt-BR")
+      : lead.responded_at
+        ? new Date(lead.responded_at).toLocaleDateString("pt-BR")
+        : null;
+
   return (
     <div
-      className="rounded-lg p-4 space-y-3 transition-all hover:shadow-md"
+      className="rounded-lg p-4 space-y-2 transition-all hover:shadow-md"
       style={{ background: "white", border: `1px solid ${col.border}` }}
     >
       <div className="flex items-start justify-between gap-2">
@@ -65,13 +85,17 @@ function LeadCard({ lead, onMove }: { lead: Lead; onMove: (id: string, status: s
 
       <div className="flex items-center gap-2 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
         <span className="font-medium">{lead.procedure_name}</span>
-        {lead.responded_at && (
+        {dateLabel && (
           <>
             <span>·</span>
-            <span>{new Date(lead.responded_at).toLocaleDateString("pt-BR")}</span>
+            <span>{dateLabel}</span>
           </>
         )}
       </div>
+
+      {lead.lead_status === "contacted" && (
+        <StaleIndicator days={lead.days_since_contact} />
+      )}
 
       {nextStatuses.length > 0 && (
         <div className="flex gap-2 pt-1">
@@ -115,17 +139,15 @@ export default function LeadsPage() {
   const rawItems = data?.items || [];
   const summary = data?.summary;
 
-  // Unique procedure names for the filter dropdown
   const procedureNames = Array.from(new Set(rawItems.map((l) => l.procedure_name).filter(Boolean))).sort();
 
-  // Client-side filtering
   const items = rawItems.filter((lead) => {
     if (filterProcedure && lead.procedure_name !== filterProcedure) return false;
     if (filterDateFrom || filterDateTo) {
-      if (!lead.responded_at) return false;
-      const respondedDate = lead.responded_at.slice(0, 10); // YYYY-MM-DD
-      if (filterDateFrom && respondedDate < filterDateFrom) return false;
-      if (filterDateTo && respondedDate > filterDateTo) return false;
+      const refDate = (lead.scheduled_for || lead.sent_at || "").slice(0, 10);
+      if (!refDate) return false;
+      if (filterDateFrom && refDate < filterDateFrom) return false;
+      if (filterDateTo && refDate > filterDateTo) return false;
     }
     return true;
   });
@@ -136,14 +158,14 @@ export default function LeadsPage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-end justify-between animate-fade-up">
+      <div className="flex items-end justify-between animate-fade-up flex-wrap gap-4">
         <div>
           <h1 className="page-title">Leads</h1>
           <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
-            Pacientes que demonstraram interesse em retornar
+            Acompanhe o funil completo de mensagens e retornos
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <div className="relative min-w-[220px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
             <Input
@@ -198,15 +220,13 @@ export default function LeadsPage() {
       ) : rawItems.length === 0 && !search ? (
         <div className="py-16 text-center animate-fade-up rounded-xl" style={{ background: "var(--cream)", border: "1px solid var(--border)" }}>
           <UserCheck className="h-8 w-8 mx-auto mb-3" style={{ color: "var(--border)" }} />
-          <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>Nenhum lead ainda. Quando pacientes responderem "Sim", aparecerão aqui.</p>
+          <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>Nenhum lead ainda. Quando procedimentos forem registrados, o funil aparecerá aqui.</p>
         </div>
       ) : (
         <div className="grid grid-cols-4 gap-4 animate-fade-up delay-100" style={{ minHeight: "60vh" }}>
           {COLUMNS.map((col) => {
             const colItems = items.filter((l) => l.lead_status === col.key);
-            const colCount = col.key === "waiting" ? (summary?.waiting ?? colItems.length)
-              : col.key === "scheduled" ? (summary?.scheduled ?? colItems.length)
-              : colItems.length;
+            const colCount = summary?.[col.key as keyof typeof summary] ?? colItems.length;
 
             return (
               <div key={col.key} className="flex flex-col">
@@ -214,11 +234,16 @@ export default function LeadsPage() {
                   className="flex items-center justify-between px-3 py-2.5 rounded-t-xl"
                   style={{ background: col.bg, borderBottom: `2px solid ${col.color}` }}
                 >
-                  <span className="text-xs font-bold uppercase tracking-wide" style={{ color: col.color }}>
-                    {col.label}
-                  </span>
+                  <div>
+                    <span className="text-xs font-bold uppercase tracking-wide block" style={{ color: col.color }}>
+                      {col.label}
+                    </span>
+                    <span className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>
+                      {col.desc}
+                    </span>
+                  </div>
                   <span
-                    className="text-[11px] font-bold px-2 py-0.5 rounded-full"
+                    className="text-[11px] font-bold px-2 py-0.5 rounded-full shrink-0"
                     style={{ background: col.color, color: "white" }}
                   >
                     {colCount}
@@ -227,7 +252,7 @@ export default function LeadsPage() {
 
                 <div
                   className="flex-1 space-y-2 p-2 rounded-b-xl overflow-y-auto"
-                  style={{ background: col.bg, maxHeight: "calc(60vh - 44px)" }}
+                  style={{ background: col.bg, maxHeight: "calc(60vh - 56px)" }}
                 >
                   {colItems.length === 0 ? (
                     <div className="py-8 text-center">

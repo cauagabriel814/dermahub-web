@@ -98,10 +98,12 @@ export default function RecallsPage() {
         ) : (
           <>
             <div
-              className="grid grid-cols-[auto_1fr_auto_auto] gap-4 px-5 py-3 text-xs font-medium uppercase tracking-widest"
+              className="grid grid-cols-[auto_minmax(100px,1fr)_minmax(100px,1fr)_1fr_auto_auto] gap-4 px-5 py-3 text-xs font-medium uppercase tracking-widest"
               style={{ borderBottom: "1px solid oklch(0.878 0.015 58)", background: "oklch(0.975 0.005 60)", color: "oklch(0.596 0.036 57.9)" }}
             >
               <span>Data</span>
+              <span>Paciente</span>
+              <span>Procedimento</span>
               <span>Mensagem</span>
               <span>Status</span>
               <span>Ações</span>
@@ -111,7 +113,7 @@ export default function RecallsPage() {
               return (
                 <div
                   key={msg.id}
-                  className="grid grid-cols-[auto_1fr_auto_auto] gap-4 items-center px-5 py-4"
+                  className="grid grid-cols-[auto_minmax(100px,1fr)_minmax(100px,1fr)_1fr_auto_auto] gap-4 items-center px-5 py-4"
                   style={{ borderBottom: i < messages.length - 1 ? "1px solid oklch(0.920 0.010 60)" : "none" }}
                 >
                   <div className="text-center min-w-[52px]">
@@ -122,6 +124,12 @@ export default function RecallsPage() {
                       {scheduledDate.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
                     </div>
                   </div>
+                  <p className="text-sm font-medium truncate" style={{ color: "oklch(0.250 0.026 50.8)" }}>
+                    {msg.patient_name ?? "—"}
+                  </p>
+                  <p className="text-sm truncate" style={{ color: "oklch(0.596 0.036 57.9)" }}>
+                    {msg.procedure_name ?? "—"}
+                  </p>
                   <div className="min-w-0">
                     <p className="text-sm truncate" style={{ color: "oklch(0.250 0.026 50.8)" }}>{msg.content}</p>
                     {msg.failure_reason && (
