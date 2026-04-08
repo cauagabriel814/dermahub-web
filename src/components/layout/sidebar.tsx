@@ -2,17 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { LogOut, Compass } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { NAV_ITEMS } from "@/lib/constants";
 import { logout } from "@/services/auth";
 import { useAuth } from "@/hooks/use-auth";
+import { useOnboardingContext } from "@/components/onboarding/onboarding-provider";
 
 export function Sidebar() {
   const pathname = usePathname();
   const { user } = useAuth();
+  const onboarding = useOnboardingContext();
   const visibleItems = NAV_ITEMS.filter(item => !item.adminOnly || user?.role === "admin");
 
   return (
@@ -105,6 +107,27 @@ export function Sidebar() {
           );
         })}
       </nav>
+
+      {/* Tour trigger */}
+      <div className="relative px-3 pb-3">
+        <button
+          onClick={() => onboarding.startTour(0)}
+          className="group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium tracking-wide transition-all duration-200"
+          style={{
+            color: "oklch(0.520 0.120 45)",
+            background: "oklch(0.520 0.120 45 / 0.08)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "oklch(0.520 0.120 45 / 0.15)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "oklch(0.520 0.120 45 / 0.08)";
+          }}
+        >
+          <Compass className="h-[18px] w-[18px] transition-transform duration-300 group-hover:rotate-45" />
+          Por Onde Começar
+        </button>
+      </div>
 
       {/* Warm brown/gold gradient glow */}
       <div

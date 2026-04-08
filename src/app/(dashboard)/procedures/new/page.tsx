@@ -84,13 +84,13 @@ function NewProcedureForm() {
   return (
     <div className="max-w-lg space-y-6">
       <div>
-        <h1 className="text-2xl font-brand font-normal tracking-wide text-foreground">Registrar Procedimento</h1>
+        <h1 className="text-2xl font-brand font-normal tracking-wide text-foreground" data-tour="new-procedure-title">Registrar Procedimento</h1>
         <p className="text-sm text-muted-foreground mt-1">Cadastro rápido — menos de 20 segundos</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-white rounded-lg border p-6">
         {/* Patient Search */}
-        <div className="space-y-1 relative">
+        <div className="space-y-1 relative" data-tour="new-procedure-patient">
           <Label>Paciente *</Label>
           <Input
             placeholder="Nome ou telefone..."
@@ -149,7 +149,7 @@ function NewProcedureForm() {
         )}
 
         {/* Procedure Type */}
-        <div className="space-y-1">
+        <div className="space-y-1" data-tour="new-procedure-type">
           <Label htmlFor="procedure_type_id">Procedimento *</Label>
           <select
             id="procedure_type_id"
@@ -178,7 +178,7 @@ function NewProcedureForm() {
         </div>
 
         <div className="flex gap-3 pt-2">
-          <Button type="submit" disabled={isSubmitting || !selectedPatient}>
+          <Button type="submit" disabled={isSubmitting || !selectedPatient} data-tour="new-procedure-submit">
             {isSubmitting ? "Registrando..." : "Registrar"}
           </Button>
           <Button type="button" variant="outline" onClick={() => router.back()}>Cancelar</Button>

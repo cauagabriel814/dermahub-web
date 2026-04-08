@@ -86,12 +86,12 @@ export default function PatientsPage() {
       {/* Header */}
       <div className="flex items-end justify-between animate-fade-up">
         <div>
-          <h1 className="page-title">Pacientes</h1>
+          <h1 className="page-title" data-tour="patients-title">Pacientes</h1>
           <p className="text-sm mt-1" style={{ color: "oklch(0.596 0.036 57.9)" }}>
             {data?.total ?? 0} paciente{(data?.total ?? 0) !== 1 ? "s" : ""} cadastrado{(data?.total ?? 0) !== 1 ? "s" : ""}
           </p>
         </div>
-        <Link href="/patients/new">
+        <Link href="/patients/new" data-tour="patients-add-btn">
           <Button
             className="btn-primary-shimmer gap-2 rounded-xl text-sm font-medium px-5"
             style={{ color: "oklch(0.975 0.005 60)", border: "none" }}
@@ -104,7 +104,7 @@ export default function PatientsPage() {
 
       {/* Search + Sort */}
       <div className="flex items-center gap-3 animate-fade-up delay-75 flex-wrap">
-        <div className="relative max-w-sm flex-1 min-w-[200px]">
+        <div className="relative max-w-sm flex-1 min-w-[200px]" data-tour="patients-search">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "oklch(0.596 0.036 57.9)" }} />
           <Input
             placeholder="Buscar por nome ou telefone..."

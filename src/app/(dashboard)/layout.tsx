@@ -1,6 +1,7 @@
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { Providers } from "@/components/providers";
+import { OnboardingModal } from "@/components/onboarding/onboarding-modal";
 
 export default function DashboardLayout({
   children,
@@ -32,6 +33,7 @@ export default function DashboardLayout({
           </main>
         </div>
       </div>
+      <OnboardingModal />
     </Providers>
   );
 }

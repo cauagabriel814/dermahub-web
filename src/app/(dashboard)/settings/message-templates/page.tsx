@@ -307,7 +307,7 @@ export default function MessageTemplatesPage() {
     <div className="space-y-6">
       <div className="flex items-end justify-between animate-fade-up">
         <div>
-          <h1 className="page-title">Modelos de Mensagem</h1>
+          <h1 className="page-title" data-tour="templates-title">Modelos de Mensagem</h1>
           <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
             Crie mensagens com variáveis dinâmicas para WhatsApp
           </p>
@@ -317,6 +317,7 @@ export default function MessageTemplatesPage() {
             onClick={() => startEditing()}
             className="btn-primary-shimmer gap-2 rounded-lg text-sm font-semibold px-5"
             style={{ color: "var(--primary-foreground)", border: "none" }}
+            data-tour="templates-add-btn"
           >
             <Plus className="h-4 w-4" />
             Novo Modelo
@@ -328,6 +329,7 @@ export default function MessageTemplatesPage() {
       <div
         className="flex flex-wrap items-center gap-2 px-4 py-3 rounded-lg animate-fade-up delay-75"
         style={{ background: "var(--cream)", border: "1px solid var(--border)" }}
+        data-tour="templates-variables"
       >
         <span className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>
           Variáveis disponíveis:

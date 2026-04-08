@@ -68,7 +68,7 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <div className="animate-fade-up flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="page-title">Visão Geral</h1>
+          <h1 className="page-title" data-tour="dashboard-title">Visão Geral</h1>
           <p className="text-sm mt-1" style={{ color: "oklch(0.520 0.015 60)" }}>
             Acompanhe os indicadores da clínica
           </p>
@@ -93,7 +93,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stat cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" data-tour="dashboard-stats">
         {stats.map((stat, i) => (
           <div
             key={stat.label}
@@ -120,7 +120,7 @@ export default function DashboardPage() {
       {/* Bottom grid */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Upcoming recalls */}
-        <div className="card-elevated animate-fade-up delay-300 rounded-xl overflow-hidden">
+        <div className="card-elevated animate-fade-up delay-300 rounded-xl overflow-hidden" data-tour="dashboard-recalls">
           <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: "oklch(0.900 0.010 65)" }}>
             <div className="flex items-center gap-3">
               <div
@@ -159,7 +159,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Recent messages */}
-        <div className="card-elevated animate-fade-up delay-400 rounded-xl overflow-hidden">
+        <div className="card-elevated animate-fade-up delay-400 rounded-xl overflow-hidden" data-tour="dashboard-messages">
           <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: "oklch(0.900 0.010 65)" }}>
             <div className="flex items-center gap-3">
               <div

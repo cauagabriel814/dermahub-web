@@ -297,3 +297,108 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   background: linear-gradient(90deg, var(--terracotta), oklch(0.600 0.100 50));
   border-radius: 99px;
 }
+
+/* ─── Driver.js tour overrides ───────────────────── */
+.dermahub-tour-popover {
+  --driver-theme-bg: var(--cream) !important;
+  --driver-theme-text: var(--brown-deep) !important;
+  --driver-theme-primary: var(--terracotta) !important;
+}
+
+.driver-popover.dermahub-tour-popover {
+  background: var(--cream) !important;
+  border: 1px solid oklch(0.520 0.120 45 / 0.12) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 16px 48px oklch(0.220 0.025 45 / 0.14), 0 4px 16px oklch(0.220 0.025 45 / 0.06) !important;
+  padding: 0 !important;
+  overflow: hidden;
+  max-width: 360px !important;
+}
+
+.driver-popover.dermahub-tour-popover::before {
+  content: "";
+  display: block;
+  height: 3px;
+  background: linear-gradient(90deg, var(--terracotta), oklch(0.600 0.100 50));
+}
+
+.driver-popover.dermahub-tour-popover .driver-popover-title {
+  font-family: var(--font-brand) !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  color: var(--brown-deep) !important;
+  letter-spacing: -0.01em;
+  padding: 20px 24px 0 !important;
+  margin: 0 !important;
+}
+
+.driver-popover.dermahub-tour-popover .driver-popover-description {
+  font-size: 0.875rem !important;
+  line-height: 1.6 !important;
+  color: oklch(0.420 0.030 50) !important;
+  padding: 8px 24px 0 !important;
+  margin: 0 !important;
+}
+
+.driver-popover.dermahub-tour-popover .driver-popover-progress-text {
+  font-size: 0.6875rem !important;
+  color: var(--muted-foreground) !important;
+  font-weight: 500;
+}
+
+.driver-popover.dermahub-tour-popover .driver-popover-footer {
+  padding: 16px 24px 20px !important;
+  margin: 0 !important;
+}
+
+.driver-popover.dermahub-tour-popover .driver-popover-footer button {
+  border-radius: 8px !important;
+  font-size: 0.8125rem !important;
+  font-weight: 600 !important;
+  padding: 8px 16px !important;
+  text-shadow: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.driver-popover.dermahub-tour-popover .driver-popover-prev-btn {
+  background: transparent !important;
+  color: var(--muted-foreground) !important;
+  border: none !important;
+}
+
+.driver-popover.dermahub-tour-popover .driver-popover-prev-btn:hover {
+  color: var(--brown-deep) !important;
+}
+
+.driver-popover.dermahub-tour-popover .driver-popover-next-btn,
+.driver-popover.dermahub-tour-popover .driver-popover-close-btn-text {
+  background: linear-gradient(135deg, var(--terracotta) 0%, oklch(0.560 0.115 48) 50%, var(--terracotta) 100%) !important;
+  background-size: 200% auto !important;
+  color: oklch(0.985 0.006 60) !important;
+  border: none !important;
+  box-shadow: 0 2px 8px var(--terracotta-glow) !important;
+}
+
+.driver-popover.dermahub-tour-popover .driver-popover-next-btn:hover,
+.driver-popover.dermahub-tour-popover .driver-popover-close-btn-text:hover {
+  background-position: right center !important;
+  box-shadow: 0 4px 16px var(--terracotta-glow) !important;
+  transform: translateY(-1px) !important;
+}
+
+.driver-popover.dermahub-tour-popover .driver-popover-arrow-side-left,
+.driver-popover.dermahub-tour-popover .driver-popover-arrow-side-right,
+.driver-popover.dermahub-tour-popover .driver-popover-arrow-side-top,
+.driver-popover.dermahub-tour-popover .driver-popover-arrow-side-bottom {
+  border-color: var(--cream) !important;
+}
+
+.driver-popover.dermahub-tour-popover .driver-popover-close-btn {
+  color: var(--muted-foreground) !important;
+  top: 20px !important;
+  right: 16px !important;
+}
+
+.driver-popover.dermahub-tour-popover .driver-popover-close-btn:hover {
+  color: var(--brown-deep) !important;
+}

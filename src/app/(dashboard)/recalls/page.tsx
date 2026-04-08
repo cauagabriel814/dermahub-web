@@ -42,14 +42,14 @@ export default function RecallsPage() {
   return (
     <div className="space-y-6">
       <div className="animate-fade-up">
-        <h1 className="page-title">Recalls Programados</h1>
+        <h1 className="page-title" data-tour="recalls-title">Recalls Programados</h1>
         <p className="text-sm mt-1" style={{ color: "oklch(0.596 0.036 57.9)" }}>
           Mensagens agendadas para envio automático via WhatsApp
         </p>
       </div>
 
       {/* Filter pills */}
-      <div className="flex flex-wrap gap-2 animate-fade-up delay-75">
+      <div className="flex flex-wrap gap-2 animate-fade-up delay-75" data-tour="recalls-filters">
         <button
           onClick={() => setFilterStatus(undefined)}
           className="px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
@@ -79,6 +79,7 @@ export default function RecallsPage() {
       <div
         className="animate-fade-up delay-100 rounded-2xl overflow-hidden"
         style={{ background: "oklch(1 0 0)", border: "1px solid oklch(0.878 0.015 58)", boxShadow: "var(--shadow-warm-sm)" }}
+        data-tour="recalls-table"
       >
         {isLoading ? (
           <div className="py-16 text-center">

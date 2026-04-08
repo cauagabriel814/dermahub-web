@@ -66,12 +66,12 @@ export default function ProcedureTypesPage() {
     <div className="space-y-6 max-w-3xl">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-brand font-normal tracking-wide text-foreground">Tipos de Procedimento</h1>
+          <h1 className="text-2xl font-brand font-normal tracking-wide text-foreground" data-tour="procedures-title">Tipos de Procedimento</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {types?.length ?? 0} procedimentos cadastrados
           </p>
         </div>
-        <Button onClick={() => setShowForm(!showForm)}>
+        <Button onClick={() => setShowForm(!showForm)} data-tour="procedures-add-btn">
           <Plus className="h-4 w-4 mr-2" />
           Novo Tipo
         </Button>
@@ -101,7 +101,7 @@ export default function ProcedureTypesPage() {
         </div>
       )}
 
-      <div className="bg-white rounded-lg border">
+      <div className="bg-white rounded-lg border" data-tour="procedures-table">
         {isLoading ? (
           <div className="p-6 text-center text-muted-foreground">Carregando...</div>
         ) : types?.length === 0 ? (

@@ -62,7 +62,7 @@ export default function MessagesPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="animate-fade-up">
-        <h1 className="page-title">Histórico de Mensagens</h1>
+        <h1 className="page-title" data-tour="messages-title">Histórico de Mensagens</h1>
         <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
           Registro de todas as mensagens enviadas e recebidas
         </p>
@@ -71,7 +71,7 @@ export default function MessagesPage() {
       {/* Filters */}
       <div className="animate-fade-up delay-75 flex flex-col sm:flex-row sm:items-center gap-3">
         {/* Search */}
-        <div className="relative flex-1 max-w-sm">
+        <div className="relative flex-1 max-w-sm" data-tour="messages-search">
           <Search
             className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
             style={{ color: "var(--muted-foreground)" }}
@@ -93,7 +93,7 @@ export default function MessagesPage() {
         </div>
 
         {/* Direction pills */}
-        <div className="flex gap-1.5 rounded-xl p-1" style={{ background: "var(--muted)" }}>
+        <div className="flex gap-1.5 rounded-xl p-1" style={{ background: "var(--muted)" }} data-tour="messages-direction-filter">
           {DIRECTION_OPTIONS.map((opt) => {
             const active = dirFilter === opt.value;
             return (

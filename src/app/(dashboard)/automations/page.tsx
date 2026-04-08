@@ -137,7 +137,7 @@ export default function AutomationsPage() {
     <div className="space-y-6">
       <div className="flex items-end justify-between animate-fade-up">
         <div>
-          <h1 className="page-title">Automações</h1>
+          <h1 className="page-title" data-tour="automations-title">Automações</h1>
           <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
             Configure quando mensagens são enviadas automaticamente
           </p>
@@ -147,6 +147,7 @@ export default function AutomationsPage() {
             onClick={() => setCreating(true)}
             className="btn-primary-shimmer gap-2 rounded-xl text-sm font-medium px-5"
             style={{ color: "var(--primary-foreground)", border: "none" }}
+            data-tour="automations-add-btn"
           >
             <Plus className="h-4 w-4" />
             Nova Regra
