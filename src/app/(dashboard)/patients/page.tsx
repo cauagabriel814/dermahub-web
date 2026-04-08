@@ -169,7 +169,7 @@ export default function PatientsPage() {
           <>
             {/* Table header */}
             <div
-              className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 px-5 py-3 text-xs font-medium uppercase tracking-widest"
+              className="grid grid-cols-[1fr_180px_130px_32px] gap-4 px-5 py-3 text-xs font-medium uppercase tracking-widest"
               style={{
                 borderBottom: "1px solid oklch(0.878 0.015 58)",
                 background: "oklch(0.975 0.005 60)",
@@ -178,7 +178,6 @@ export default function PatientsPage() {
             >
               <span>Nome</span>
               <span className="hidden md:block">Telefone</span>
-              <span className="hidden lg:block">E-mail</span>
               <span>Último Proced.</span>
               <span />
             </div>
@@ -193,7 +192,7 @@ export default function PatientsPage() {
                 <Link
                   key={p.id}
                   href={`/patients/${p.id}`}
-                  className="group grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 items-center px-5 py-3.5 transition-all duration-150 table-row-hover"
+                  className="group grid grid-cols-[1fr_180px_130px_32px] gap-4 items-center px-5 py-3.5 transition-all duration-150 table-row-hover"
                   style={{
                     borderBottom: i < sortedItems.length - 1 ? "1px solid oklch(0.920 0.010 60)" : "none",
                   }}
@@ -209,11 +208,6 @@ export default function PatientsPage() {
                   {/* Phone */}
                   <span className="hidden md:block text-sm" style={{ color: "oklch(0.596 0.036 57.9)" }}>
                     {p.phone}
-                  </span>
-
-                  {/* Email */}
-                  <span className="hidden lg:block text-sm" style={{ color: "oklch(0.596 0.036 57.9)" }}>
-                    {p.email ?? "—"}
                   </span>
 
                   {/* Last procedure — green if scheduled (future date) */}

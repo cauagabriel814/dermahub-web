@@ -37,6 +37,8 @@ export default function MessagesPage() {
   const [search, setSearch] = useState("");
   const [dirFilter, setDirFilter] = useState<DirectionFilter>("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
 
   const { data: logs = [], isLoading } = useQuery({
     queryKey: ["message-logs"],
@@ -57,8 +59,14 @@ export default function MessagesPage() {
           l.patient_id.toLowerCase().includes(q)
       );
     }
+    if (dateFrom) {
+      result = result.filter((l) => l.sent_at && l.sent_at.slice(0, 10) >= dateFrom);
+    }
+    if (dateTo) {
+      result = result.filter((l) => l.sent_at && l.sent_at.slice(0, 10) <= dateTo);
+    }
     return result;
-  }, [logs, dirFilter, search]);
+  }, [logs, dirFilter, search, dateFrom, dateTo]);
 
   return (
     <div className="space-y-6">
@@ -113,6 +121,39 @@ export default function MessagesPage() {
               </button>
             );
           })}
+        </div>
+
+        {/* Date filters */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5">
+            <label className="text-xs whitespace-nowrap" style={{ color: "var(--muted-foreground)" }}>De</label>
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="h-9 rounded-lg text-sm px-2 bg-white"
+              style={{ border: "1px solid var(--border)", color: dateFrom ? "inherit" : "var(--muted-foreground)" }}
+            />
+          </div>
+          <div className="flex items-center gap-1.5">
+            <label className="text-xs whitespace-nowrap" style={{ color: "var(--muted-foreground)" }}>Até</label>
+            <input
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="h-9 rounded-lg text-sm px-2 bg-white"
+              style={{ border: "1px solid var(--border)", color: dateTo ? "inherit" : "var(--muted-foreground)" }}
+            />
+          </div>
+          {(dateFrom || dateTo) && (
+            <button
+              onClick={() => { setDateFrom(""); setDateTo(""); }}
+              className="h-9 px-3 rounded-lg text-xs font-semibold transition-colors"
+              style={{ background: "oklch(0.540 0.200 25 / 0.08)", color: "oklch(0.540 0.200 25)", border: "1px solid oklch(0.540 0.200 25 / 0.2)" }}
+            >
+              Limpar
+            </button>
+          )}
         </div>
       </div>
 

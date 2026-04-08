@@ -206,6 +206,15 @@ export default function LeadsPage() {
               style={{ border: "1px solid var(--border)", color: filterDateTo ? "inherit" : "var(--muted-foreground)" }}
             />
           </div>
+          {(filterProcedure || filterDateFrom || filterDateTo) && (
+            <button
+              onClick={() => { setFilterProcedure(""); setFilterDateFrom(""); setFilterDateTo(""); }}
+              className="h-9 px-3 rounded-lg text-xs font-semibold transition-colors"
+              style={{ background: "oklch(0.540 0.200 25 / 0.08)", color: "oklch(0.540 0.200 25)", border: "1px solid oklch(0.540 0.200 25 / 0.2)" }}
+            >
+              Limpar filtros
+            </button>
+          )}
         </div>
       </div>
 

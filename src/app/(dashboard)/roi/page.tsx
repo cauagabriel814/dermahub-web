@@ -123,7 +123,7 @@ export default function RoiPage() {
             Acompanhe o retorno gerado pelo DermaHub
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {PERIODS.map((p) => (
             <button
               key={p.value}
