@@ -30,6 +30,9 @@ export async function createMessageTemplate(data: MessageTemplateCreate) {
 export async function updateMessageTemplate(id: string, data: MessageTemplateUpdate) {
   return apiFetch<MessageTemplate>(`/message-templates/${id}`, { method: "PATCH", body: JSON.stringify(data) });
 }
+export async function deleteMessageTemplate(id: string) {
+  return apiFetch(`/message-templates/${id}`, { method: "DELETE" });
+}
 
 // --- Automation Rules ---
 export async function getAutomationRules(procedureTypeId?: string, activeOnly = false) {

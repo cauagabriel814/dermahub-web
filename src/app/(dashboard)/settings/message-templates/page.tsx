@@ -9,6 +9,7 @@ import {
   getMessageTemplates,
   createMessageTemplate,
   updateMessageTemplate,
+  deleteMessageTemplate,
 } from "@/services/messaging";
 import { apiUpload } from "@/services/api";
 import type { MessageTemplate, MessageType, TemplateButton, CarouselItem, TemplateComponents } from "@/types/api";
@@ -259,6 +260,11 @@ export default function MessageTemplatesPage() {
     mutationFn: ({ id, data }: { id: string; data: Parameters<typeof updateMessageTemplate>[1] }) =>
       updateMessageTemplate(id, data),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["message-templates"] }); setEditing(null); },
+  });
+
+  const deleteMut = useMutation({
+    mutationFn: (id: string) => deleteMessageTemplate(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["message-templates"] }),
   });
 
   function handleSave() {
@@ -532,6 +538,13 @@ export default function MessageTemplatesPage() {
                       ? <ToggleRight className="h-5 w-5" style={{ color: "var(--green)" }} />
                       : <ToggleLeft className="h-5 w-5" style={{ color: "var(--border)" }} />
                     }
+                  </button>
+                  <button
+                    onClick={() => { if (window.confirm("Tem certeza que deseja excluir este modelo?")) deleteMut.mutate(t.id); }}
+                    className="p-1.5 rounded-lg transition-colors hover:bg-red-50"
+                    title="Excluir"
+                  >
+                    <Trash2 className="h-4 w-4" style={{ color: "oklch(0.55 0.15 27)" }} />
                   </button>
                 </div>
               </div>

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { MessageSquare, Send, Inbox, Search, ChevronDown } from "lucide-react";
+import { MessageSquare, Send, Inbox, Search, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { getMessageLogs } from "@/services/messaging";
 
 // TODO: Backend should return `patient_name` and `procedure_name` in the
@@ -39,6 +39,8 @@ export default function MessagesPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 20;
 
   const { data: logs = [], isLoading } = useQuery({
     queryKey: ["message-logs"],
@@ -67,6 +69,18 @@ export default function MessagesPage() {
     }
     return result;
   }, [logs, dirFilter, search, dateFrom, dateTo]);
+
+  // Reset page when filters change
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginatedLogs = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
+  // Reset to first page when filters change
+  const filterKey = `${dirFilter}-${search}-${dateFrom}-${dateTo}`;
+  const prevFilterKey = useRef(filterKey);
+  if (prevFilterKey.current !== filterKey) {
+    prevFilterKey.current = filterKey;
+    if (page !== 0) setPage(0);
+  }
 
   return (
     <div className="space-y-6">
@@ -207,7 +221,7 @@ export default function MessagesPage() {
             </div>
 
             {/* Rows */}
-            {filtered.map((log, i) => {
+            {paginatedLogs.map((log, i) => {
               const badge = getStatusBadge(log.delivery_status);
               const sentDate = log.sent_at ? new Date(log.sent_at) : null;
               const isExpanded = expandedId === log.id;
@@ -219,7 +233,7 @@ export default function MessagesPage() {
                     className="table-row-hover grid grid-cols-1 sm:grid-cols-[40px_110px_1fr_1fr_1fr_90px] gap-3 items-center px-5 py-3.5 cursor-pointer select-none"
                     style={{
                       borderBottom:
-                        i < filtered.length - 1 && !isExpanded
+                        i < paginatedLogs.length - 1 && !isExpanded
                           ? "1px solid var(--border)"
                           : isExpanded
                           ? "none"
@@ -307,7 +321,7 @@ export default function MessagesPage() {
                       className="px-5 pb-4 animate-fade-in"
                       style={{
                         borderBottom:
-                          i < filtered.length - 1
+                          i < paginatedLogs.length - 1
                             ? "1px solid var(--border)"
                             : "none",
                       }}
@@ -362,15 +376,46 @@ export default function MessagesPage() {
         )}
       </div>
 
-      {/* Count footer */}
+      {/* Pagination footer */}
       {!isLoading && filtered.length > 0 && (
-        <p
-          className="text-xs text-right animate-fade-up delay-200"
-          style={{ color: "var(--muted-foreground)" }}
-        >
-          {filtered.length} mensage{filtered.length === 1 ? "m" : "ns"}
-          {filtered.length !== logs.length && ` de ${logs.length} no total`}
-        </p>
+        <div className="flex items-center justify-between animate-fade-up delay-200">
+          <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+            {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, filtered.length)} de {filtered.length} mensage{filtered.length === 1 ? "m" : "ns"}
+          </p>
+          {totalPages > 1 && (
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setPage((p) => Math.max(0, p - 1))}
+                disabled={page === 0}
+                className="p-1.5 rounded-lg transition-colors disabled:opacity-30"
+                style={{ color: "var(--muted-foreground)" }}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setPage(i)}
+                  className="h-7 w-7 rounded-lg text-xs font-semibold transition-colors"
+                  style={page === i
+                    ? { background: "var(--terracotta)", color: "var(--primary-foreground)" }
+                    : { color: "var(--muted-foreground)" }
+                  }
+                >
+                  {i + 1}
+                </button>
+              ))}
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                disabled={page >= totalPages - 1}
+                className="p-1.5 rounded-lg transition-colors disabled:opacity-30"
+                style={{ color: "var(--muted-foreground)" }}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
