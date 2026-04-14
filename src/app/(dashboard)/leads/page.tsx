@@ -23,7 +23,7 @@ const NEXT_STATUS: Record<string, string[]> = {
 };
 
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value / 100);
+  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
 }
 
 function StaleIndicator({ days }: { days: number | null }) {

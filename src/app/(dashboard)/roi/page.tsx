@@ -21,7 +21,7 @@ const RANKING_TABS: { key: RankingTab; label: string }[] = [
 ];
 
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value / 100);
+  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
 }
 
 function diffDays(from: string, to: string): number {
