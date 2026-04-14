@@ -30,7 +30,7 @@ export default function ProcedureTypesPage() {
     await createProcedureType({
       name: newName,
       default_recall_days: Number(newDays),
-      price: newPrice ? Number(newPrice) : undefined,
+      price: newPrice ? Math.round(Number(newPrice.replace(",", ".")) * 100) : undefined,
     });
     await queryClient.invalidateQueries({ queryKey: ["procedure-types-all"] });
     setNewName(""); setNewDays(""); setNewPrice(""); setShowForm(false);
@@ -38,14 +38,18 @@ export default function ProcedureTypesPage() {
 
   function startEdit(t: ProcedureType) {
     setEditingId(t.id);
-    setEditState({ name: t.name, default_recall_days: String(t.default_recall_days), price: t.price ? String(t.price) : "" });
+    setEditState({
+      name: t.name,
+      default_recall_days: String(t.default_recall_days),
+      price: t.price ? (t.price / 100).toFixed(2).replace(".", ",") : "",
+    });
   }
 
   async function saveEdit(id: string) {
     await updateProcedureType(id, {
       name: editState.name,
       default_recall_days: Number(editState.default_recall_days),
-      price: editState.price ? Number(editState.price) : undefined,
+      price: editState.price ? Math.round(Number(editState.price.replace(",", ".")) * 100) : undefined,
     });
     await queryClient.invalidateQueries({ queryKey: ["procedure-types-all"] });
     setEditingId(null);
@@ -87,7 +91,7 @@ export default function ProcedureTypesPage() {
             </div>
             <div className="space-y-1">
               <Label>Valor (R$)</Label>
-              <Input type="number" placeholder="Ex: 1300" value={newPrice} onChange={(e) => setNewPrice(e.target.value)} />
+              <Input type="text" inputMode="decimal" placeholder="Ex: 1300,00" value={newPrice} onChange={(e) => setNewPrice(e.target.value)} />
             </div>
             <div className="space-y-1">
               <Label>Recall (dias)</Label>
@@ -125,7 +129,7 @@ export default function ProcedureTypesPage() {
                       <Input className="h-7 text-sm" value={editState.name} onChange={(e) => setEditState(s => ({ ...s, name: e.target.value }))} />
                     </td>
                     <td className="px-4 py-2">
-                      <Input className="h-7 text-sm w-24" type="number" value={editState.price} onChange={(e) => setEditState(s => ({ ...s, price: e.target.value }))} />
+                      <Input className="h-7 text-sm w-24" type="text" inputMode="decimal" value={editState.price} onChange={(e) => setEditState(s => ({ ...s, price: e.target.value }))} />
                     </td>
                     <td className="px-4 py-2">
                       <Input className="h-7 text-sm w-20" type="number" value={editState.default_recall_days} onChange={(e) => setEditState(s => ({ ...s, default_recall_days: e.target.value }))} />
@@ -146,7 +150,9 @@ export default function ProcedureTypesPage() {
                   <tr key={t.id} className="border-b last:border-0 hover:bg-muted/40">
                     <td className="px-4 py-3 font-medium">{t.name}</td>
                     <td className="px-4 py-3 text-muted-foreground">
-                      {t.price ? `R$ ${t.price.toLocaleString("pt-BR")}` : "—"}
+                      {t.price
+                        ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(t.price / 100)
+                        : "—"}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">{t.default_recall_days} dias</td>
                     <td className="px-4 py-3">
