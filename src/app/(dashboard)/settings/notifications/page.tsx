@@ -129,9 +129,9 @@ export default function NotificationsPage() {
           os números abaixo recebem uma notificação no WhatsApp para tomar a ação.
           Mensagens de <strong>pós-procedimento</strong> não disparam notificação.
           <p className="text-xs mt-1.5" style={{ color: "var(--muted-foreground)" }}>
-            Variáveis disponíveis: <code className="px-1.5 py-0.5 rounded bg-white">{"{patient_name}"}</code>,
-            <code className="px-1.5 py-0.5 rounded bg-white ml-1">{"{patient_phone}"}</code>,
-            <code className="px-1.5 py-0.5 rounded bg-white ml-1">{"{procedure_name}"}</code>
+            Variáveis disponíveis: <code className="px-1.5 py-0.5 rounded bg-white">{"{nome}"}</code>,
+            <code className="px-1.5 py-0.5 rounded bg-white ml-1">{"{telefone}"}</code>,
+            <code className="px-1.5 py-0.5 rounded bg-white ml-1">{"{procedimento}"}</code>
           </p>
         </div>
       </div>
@@ -183,7 +183,7 @@ export default function NotificationsPage() {
               style={{ border: "1px solid var(--border)", background: "white" }}
             />
             <p className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>
-              Use {"{patient_name}"}, {"{patient_phone}"} e {"{procedure_name}"} para substituições automáticas.
+              Use {"{nome}"}, {"{telefone}"} e {"{procedimento}"} para substituições automáticas.
             </p>
           </div>
 
