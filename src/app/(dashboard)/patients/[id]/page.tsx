@@ -1,11 +1,13 @@
 "use client";
 
-import { use } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { use, useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { ArrowLeft, Phone, Mail, CalendarDays, ClipboardList, MessageSquare, Send, Inbox } from "lucide-react";
+import { ArrowLeft, Phone, Mail, CalendarDays, ClipboardList, MessageSquare, Send, Inbox, Pencil, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getPatient } from "@/services/patients";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { getPatient, updatePatient } from "@/services/patients";
 import { getProcedureRecords, getProcedureTypes } from "@/services/procedures";
 import { getScheduledMessages, getMessageLogs } from "@/services/messaging";
 
@@ -19,10 +21,41 @@ const STATUS_STYLE: Record<string, { bg: string; color: string; label: string }>
 
 export default function PatientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const qc = useQueryClient();
+  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState({ full_name: "", phone: "", email: "", notes: "" });
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const { data: patient, isLoading } = useQuery({
     queryKey: ["patient", id],
     queryFn: () => getPatient(id),
+  });
+
+  useEffect(() => {
+    if (patient) {
+      setForm({
+        full_name: patient.full_name || "",
+        phone: patient.phone || "",
+        email: patient.email || "",
+        notes: patient.notes || "",
+      });
+    }
+  }, [patient]);
+
+  const updateMut = useMutation({
+    mutationFn: () => updatePatient(id, {
+      full_name: form.full_name || undefined,
+      phone: form.phone || undefined,
+      email: form.email || undefined,
+      notes: form.notes || undefined,
+    }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["patient", id] });
+      qc.invalidateQueries({ queryKey: ["patients"] });
+      setEditing(false);
+      setSaveError(null);
+    },
+    onError: () => setSaveError("Erro ao salvar. Verifique os dados e tente novamente."),
   });
 
   const { data: records = [] } = useQuery({
@@ -122,17 +155,128 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
               <p className="text-sm mt-3 italic" style={{ color: "oklch(0.596 0.036 57.9)" }}>{patient.notes}</p>
             )}
           </div>
-          <Link href={`/procedures/new?patient_id=${patient.id}`}>
-            <Button
-              className="btn-primary-shimmer rounded-xl text-sm gap-2 px-5 py-2.5 font-semibold"
-              style={{ color: "var(--primary-foreground)", border: "none" }}
+          <div className="flex flex-col gap-2 shrink-0">
+            <Link href={`/procedures/new?patient_id=${patient.id}`}>
+              <Button
+                className="btn-primary-shimmer rounded-xl text-sm gap-2 px-5 py-2.5 font-semibold w-full"
+                style={{ color: "var(--primary-foreground)", border: "none" }}
+              >
+                <ClipboardList className="h-4 w-4" />
+                Registrar Procedimento
+              </Button>
+            </Link>
+            <button
+              onClick={() => setEditing(true)}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl text-xs font-medium px-3 py-1.5 transition-colors"
+              style={{
+                background: "oklch(0.520 0.120 45 / 0.08)",
+                color: "var(--terracotta)",
+                border: "1px solid oklch(0.520 0.120 45 / 0.15)",
+              }}
             >
-              <ClipboardList className="h-4 w-4" />
-              Registrar Procedimento
-            </Button>
-          </Link>
+              <Pencil className="h-3 w-3" />
+              Editar dados
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Edit modal */}
+      {editing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 animate-fade-in"
+            style={{ background: "oklch(0.180 0.022 44 / 0.55)", backdropFilter: "blur(8px)" }}
+            onClick={() => setEditing(false)}
+          />
+          <div
+            className="relative w-full max-w-md animate-fade-up rounded-2xl overflow-hidden"
+            style={{
+              background: "var(--cream)",
+              border: "1px solid oklch(0.520 0.120 45 / 0.12)",
+              boxShadow: "0 24px 80px oklch(0.220 0.025 45 / 0.18)",
+            }}
+          >
+            <div className="h-[3px] w-full" style={{ background: "linear-gradient(90deg, var(--terracotta), oklch(0.600 0.100 50))" }} />
+            <button
+              onClick={() => setEditing(false)}
+              className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-black/5"
+              style={{ color: "var(--muted-foreground)" }}
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <div className="px-7 py-6">
+              <h2
+                className="text-lg font-semibold mb-5"
+                style={{ color: "var(--brown-deep)", fontFamily: "var(--font-brand)" }}
+              >
+                Editar dados da paciente
+              </h2>
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium uppercase tracking-wide" style={{ color: "var(--muted-foreground)" }}>
+                    Nome completo
+                  </Label>
+                  <Input
+                    value={form.full_name}
+                    onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+                    className="rounded-lg"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium uppercase tracking-wide" style={{ color: "var(--muted-foreground)" }}>
+                    Telefone (WhatsApp)
+                  </Label>
+                  <Input
+                    value={form.phone}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    placeholder="55419..."
+                    className="rounded-lg"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium uppercase tracking-wide" style={{ color: "var(--muted-foreground)" }}>
+                    E-mail
+                  </Label>
+                  <Input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    className="rounded-lg"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium uppercase tracking-wide" style={{ color: "var(--muted-foreground)" }}>
+                    Observações
+                  </Label>
+                  <Input
+                    value={form.notes}
+                    onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                    className="rounded-lg"
+                  />
+                </div>
+                {saveError && <p className="text-xs text-red-500">{saveError}</p>}
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-2 px-7 py-4" style={{ borderTop: "1px solid oklch(0.520 0.120 45 / 0.06)" }}>
+              <button
+                onClick={() => { setEditing(false); setSaveError(null); }}
+                className="rounded-lg px-4 py-2 text-xs font-medium transition-colors"
+                style={{ color: "var(--muted-foreground)" }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => updateMut.mutate()}
+                disabled={updateMut.isPending || !form.full_name || !form.phone}
+                className="btn-primary-shimmer rounded-lg px-5 py-2 text-xs disabled:opacity-50"
+              >
+                {updateMut.isPending ? "Salvando..." : "Salvar alterações"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Procedure history */}
       <div
