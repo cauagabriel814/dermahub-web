@@ -124,15 +124,39 @@ export default function NotificationsPage() {
         }}
       >
         <Bell className="h-5 w-5 mt-0.5 shrink-0" style={{ color: "var(--terracotta)" }} />
-        <div className="text-sm" style={{ color: "var(--brown-medium)" }}>
+        <div className="text-sm flex-1" style={{ color: "var(--brown-medium)" }}>
           Quando uma paciente responder <strong>SIM</strong> a uma mensagem de <strong>recall</strong>,
-          os números abaixo recebem uma notificação no WhatsApp para tomar a ação.
+          os números cadastrados recebem uma notificação no WhatsApp para tomar a ação.
           Mensagens de <strong>pós-procedimento</strong> não disparam notificação.
-          <p className="text-xs mt-1.5" style={{ color: "var(--muted-foreground)" }}>
+          <p className="text-xs mt-2" style={{ color: "var(--muted-foreground)" }}>
             Variáveis disponíveis: <code className="px-1.5 py-0.5 rounded bg-white">{"{nome}"}</code>,
             <code className="px-1.5 py-0.5 rounded bg-white ml-1">{"{telefone}"}</code>,
             <code className="px-1.5 py-0.5 rounded bg-white ml-1">{"{procedimento}"}</code>
           </p>
+
+          {/* Preview of the default message */}
+          <div className="mt-3">
+            <p className="text-[11px] font-semibold uppercase tracking-wide mb-1.5" style={{ color: "var(--muted-foreground)" }}>
+              Exemplo da mensagem:
+            </p>
+            <pre
+              className="text-xs whitespace-pre-wrap rounded-lg px-3 py-2.5 font-sans leading-relaxed"
+              style={{
+                background: "white",
+                border: "1px solid oklch(0.520 0.120 45 / 0.12)",
+                color: "var(--brown-deep)",
+                fontFamily: "inherit",
+              }}
+            >
+{`🔔 *Lead de Recall*
+{nome} respondeu SIM!
+
+Procedimento: {procedimento}
+Telefone: {telefone}
+
+Procurar agendar pelo WhatsApp.`}
+            </pre>
+          </div>
         </div>
       </div>
 
