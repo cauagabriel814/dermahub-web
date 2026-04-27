@@ -198,8 +198,30 @@ export interface RoiDashboard {
   ranking: RoiRanking[];
 }
 
+// Notification Recipients
+export interface NotificationRecipient {
+  id: string;
+  clinic_id: string;
+  name: string;
+  phone: string;
+  message_template: string;
+  active: boolean;
+}
+export interface NotificationRecipientCreate {
+  name: string;
+  phone: string;
+  message_template?: string;
+  active?: boolean;
+}
+export interface NotificationRecipientUpdate {
+  name?: string;
+  phone?: string;
+  message_template?: string;
+  active?: boolean;
+}
+
 // Leads
-export type LeadStatus = "waiting" | "contacted" | "scheduled" | "returned";
+export type LeadStatus = "waiting" | "sent" | "responded" | "scheduled" | "returned" | "not_interested";
 export interface Lead {
   id: string;
   patient_name: string;
@@ -216,9 +238,11 @@ export interface Lead {
 }
 export interface LeadsSummary {
   waiting: number;
-  contacted: number;
+  sent: number;
+  responded: number;
   scheduled: number;
   returned: number;
+  not_interested: number;
 }
 export interface LeadsResponse {
   summary: LeadsSummary;

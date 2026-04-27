@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Phone, ChevronRight, Search, UserCheck, ExternalLink, Clock } from "lucide-react";
+import { Phone, ChevronRight, Search, UserCheck, ExternalLink, Clock, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { getLeads, updateLead } from "@/services/messaging";
@@ -10,16 +10,20 @@ import type { Lead } from "@/types/api";
 
 const COLUMNS = [
   { key: "waiting", label: "Aguardando", desc: "Mensagens agendadas para envio", color: "var(--terracotta)", bg: "oklch(0.520 0.120 45 / 0.06)", border: "oklch(0.520 0.120 45 / 0.20)" },
-  { key: "contacted", label: "Contatado", desc: "Mensagem enviada, aguardando resposta", color: "oklch(0.600 0.090 65)", bg: "oklch(0.600 0.090 65 / 0.06)", border: "oklch(0.600 0.090 65 / 0.20)" },
-  { key: "scheduled", label: "Agendado", desc: "Respondeu e agendou retorno", color: "var(--green)", bg: "var(--green-muted)", border: "oklch(0.380 0.060 150 / 0.20)" },
+  { key: "sent", label: "Enviado", desc: "Mensagem enviada, aguardando resposta", color: "oklch(0.600 0.090 65)", bg: "oklch(0.600 0.090 65 / 0.06)", border: "oklch(0.600 0.090 65 / 0.20)" },
+  { key: "responded", label: "Respondeu", desc: "Demonstrou interesse, falar para agendar", color: "oklch(0.520 0.130 60)", bg: "oklch(0.520 0.130 60 / 0.08)", border: "oklch(0.520 0.130 60 / 0.25)" },
+  { key: "scheduled", label: "Agendado", desc: "Confirmou retorno na agenda", color: "var(--green)", bg: "var(--green-muted)", border: "oklch(0.380 0.060 150 / 0.20)" },
   { key: "returned", label: "Retornou", desc: "Compareceu ao procedimento", color: "oklch(0.320 0.060 150)", bg: "oklch(0.380 0.060 150 / 0.10)", border: "oklch(0.380 0.060 150 / 0.25)" },
+  { key: "not_interested", label: "Sem interesse", desc: "Respondeu negativamente ou recusou", color: "oklch(0.540 0.020 50)", bg: "oklch(0.540 0.020 50 / 0.06)", border: "oklch(0.540 0.020 50 / 0.20)" },
 ] as const;
 
 const NEXT_STATUS: Record<string, string[]> = {
   waiting: [],
-  contacted: ["scheduled"],
+  sent: [],
+  responded: ["scheduled", "not_interested"],
   scheduled: [],
   returned: [],
+  not_interested: [],
 };
 
 function formatCurrency(value: number) {
@@ -44,10 +48,10 @@ function LeadCard({ lead, onMove }: { lead: Lead; onMove: (id: string, status: s
 
   const dateLabel = lead.lead_status === "waiting" && lead.scheduled_for
     ? new Date(lead.scheduled_for).toLocaleDateString("pt-BR")
-    : lead.sent_at
-      ? new Date(lead.sent_at).toLocaleDateString("pt-BR")
-      : lead.responded_at
-        ? new Date(lead.responded_at).toLocaleDateString("pt-BR")
+    : lead.responded_at
+      ? new Date(lead.responded_at).toLocaleDateString("pt-BR")
+      : lead.sent_at
+        ? new Date(lead.sent_at).toLocaleDateString("pt-BR")
         : null;
 
   return (
@@ -93,7 +97,7 @@ function LeadCard({ lead, onMove }: { lead: Lead; onMove: (id: string, status: s
         )}
       </div>
 
-      {lead.lead_status === "contacted" && (
+      {lead.lead_status === "sent" && (
         <StaleIndicator days={lead.days_since_contact} />
       )}
 
@@ -101,6 +105,7 @@ function LeadCard({ lead, onMove }: { lead: Lead; onMove: (id: string, status: s
         <div className="flex gap-2 pt-1">
           {nextStatuses.map((status) => {
             const target = COLUMNS.find((c) => c.key === status)!;
+            const isNeg = status === "not_interested";
             return (
               <button
                 key={status}
@@ -108,7 +113,7 @@ function LeadCard({ lead, onMove }: { lead: Lead; onMove: (id: string, status: s
                 className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-md text-[11px] font-semibold transition-colors"
                 style={{ background: target.bg, color: target.color, border: `1px solid ${target.border}` }}
               >
-                <ChevronRight className="h-3 w-3" />
+                {isNeg ? <X className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
                 {target.label}
               </button>
             );
@@ -232,7 +237,7 @@ export default function LeadsPage() {
           <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>Nenhum lead ainda. Quando procedimentos forem registrados, o funil aparecerá aqui.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-4 gap-4 animate-fade-up delay-100" style={{ minHeight: "60vh" }}>
+        <div className="grid grid-cols-6 gap-3 animate-fade-up delay-100" style={{ minHeight: "60vh" }}>
           {COLUMNS.map((col) => {
             const colItems = items.filter((l) => l.lead_status === col.key);
             const colCount = summary?.[col.key as keyof typeof summary] ?? colItems.length;
@@ -243,11 +248,11 @@ export default function LeadsPage() {
                   className="flex items-center justify-between px-3 py-2.5 rounded-t-xl"
                   style={{ background: col.bg, borderBottom: `2px solid ${col.color}` }}
                 >
-                  <div>
-                    <span className="text-xs font-bold uppercase tracking-wide block" style={{ color: col.color }}>
+                  <div className="min-w-0">
+                    <span className="text-[11px] font-bold uppercase tracking-wide block" style={{ color: col.color }}>
                       {col.label}
                     </span>
-                    <span className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>
+                    <span className="text-[10px] block leading-tight" style={{ color: "var(--muted-foreground)" }}>
                       {col.desc}
                     </span>
                   </div>
@@ -261,7 +266,7 @@ export default function LeadsPage() {
 
                 <div
                   className="flex-1 space-y-2 p-2 rounded-b-xl overflow-y-auto"
-                  style={{ background: col.bg, maxHeight: "calc(60vh - 56px)" }}
+                  style={{ background: col.bg, maxHeight: "calc(60vh - 70px)" }}
                 >
                   {colItems.length === 0 ? (
                     <div className="py-8 text-center">

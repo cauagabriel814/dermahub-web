@@ -3,6 +3,7 @@ import {
   Users,
   ClipboardList,
   BellRing,
+  Bell,
   Zap,
   MessageSquare,
   FileText,
@@ -30,6 +31,7 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/messages", label: "Mensagens", icon: MessageSquare },
   { href: "/settings/message-templates", label: "Modelos", icon: FileText },
   { href: "/settings/procedure-types", label: "Procedimentos", icon: Settings },
+  { href: "/settings/notifications", label: "Notificações", icon: Bell, adminOnly: true },
   { href: "/settings/users", label: "Usuários", icon: UserCog, adminOnly: true },
 ];
 
