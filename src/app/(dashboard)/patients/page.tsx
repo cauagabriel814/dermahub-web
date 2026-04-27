@@ -7,6 +7,7 @@ import { Search, UserPlus, ChevronRight, ArrowUpDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { getPatients } from "@/services/patients";
+import { formatDateBR } from "@/lib/format";
 
 type SortOption = "name-asc" | "name-desc" | "proc-desc" | "proc-asc";
 
@@ -219,7 +220,7 @@ export default function PatientsPage() {
                     }}
                   >
                     {p.last_procedure_date
-                      ? new Date(p.last_procedure_date + "T00:00:00").toLocaleDateString("pt-BR")
+                      ? formatDateBR(p.last_procedure_date)
                       : "—"}
                   </span>
 

@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { getPatient, updatePatient } from "@/services/patients";
 import { getProcedureRecords, getProcedureTypes } from "@/services/procedures";
 import { getScheduledMessages, getMessageLogs } from "@/services/messaging";
+import { formatDateBR, formatDateTime } from "@/lib/format";
 
 const STATUS_STYLE: Record<string, { bg: string; color: string; label: string }> = {
   pending:   { bg: "oklch(0.520 0.120 45 / 0.10)", color: "oklch(0.520 0.120 45)", label: "Pendente" },
@@ -147,7 +148,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
               {patient.last_procedure_date && (
                 <div className="flex items-center gap-1.5 text-sm" style={{ color: "oklch(0.596 0.036 57.9)" }}>
                   <CalendarDays className="h-3.5 w-3.5" />
-                  Último: {new Date(patient.last_procedure_date + "T00:00:00").toLocaleDateString("pt-BR")}
+                  Último: {formatDateBR(patient.last_procedure_date)}
                 </div>
               )}
             </div>
@@ -309,7 +310,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
                   {r.notes && <p className="text-xs truncate" style={{ color: "oklch(0.596 0.036 57.9)" }}>{r.notes}</p>}
                 </div>
                 <span className="text-xs whitespace-nowrap" style={{ color: "oklch(0.596 0.036 57.9)" }}>
-                  {new Date(r.procedure_date + "T00:00:00").toLocaleDateString("pt-BR")}
+                  {formatDateBR(r.procedure_date)}
                 </span>
               </div>
             ))}
@@ -344,7 +345,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
                   <div className="flex-1 min-w-0">
                     <p className="text-sm truncate" style={{ color: "oklch(0.250 0.026 50.8)" }}>{m.content}</p>
                     <p className="text-xs mt-0.5" style={{ color: "oklch(0.596 0.036 57.9)" }}>
-                      {new Date(m.scheduled_for).toLocaleString("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
+                      {formatDateTime(m.scheduled_for)}
                     </p>
                   </div>
                   <span className="text-xs px-2.5 py-0.5 rounded-full whitespace-nowrap"
@@ -370,7 +371,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
                 <div className="flex-1 min-w-0">
                   <p className="text-sm truncate" style={{ color: "oklch(0.250 0.026 50.8)" }}>{log.content}</p>
                   <p className="text-xs mt-0.5" style={{ color: "oklch(0.596 0.036 57.9)" }}>
-                    {log.sent_at ? new Date(log.sent_at).toLocaleString("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "—"}
+                    {log.sent_at ? formatDateTime(log.sent_at) : "—"}
                     {" · "}{log.delivery_status}
                   </p>
                 </div>

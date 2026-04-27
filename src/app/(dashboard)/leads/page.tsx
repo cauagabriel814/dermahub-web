@@ -6,6 +6,7 @@ import { Phone, ChevronRight, Search, UserCheck, ExternalLink, Clock, X } from "
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { getLeads, updateLead } from "@/services/messaging";
+import { formatDateBR } from "@/lib/format";
 import type { Lead } from "@/types/api";
 
 const COLUMNS = [
@@ -47,11 +48,11 @@ function LeadCard({ lead, onMove }: { lead: Lead; onMove: (id: string, status: s
   const nextStatuses = NEXT_STATUS[lead.lead_status] || [];
 
   const dateLabel = lead.lead_status === "waiting" && lead.scheduled_for
-    ? new Date(lead.scheduled_for).toLocaleDateString("pt-BR")
+    ? formatDateBR(lead.scheduled_for)
     : lead.responded_at
-      ? new Date(lead.responded_at).toLocaleDateString("pt-BR")
+      ? formatDateBR(lead.responded_at)
       : lead.sent_at
-        ? new Date(lead.sent_at).toLocaleDateString("pt-BR")
+        ? formatDateBR(lead.sent_at)
         : null;
 
   return (

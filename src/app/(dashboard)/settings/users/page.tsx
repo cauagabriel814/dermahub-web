@@ -6,6 +6,7 @@ import { Plus, Edit2, Check, X, UserCog, Shield, User as UserIcon } from "lucide
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getUsers, createUserApi, updateUserApi } from "@/services/messaging";
+import { formatDateBR } from "@/lib/format";
 
 interface EditingState {
   id: string | null;
@@ -155,7 +156,7 @@ export default function UsersPage() {
                   {u.role === "admin" ? "Admin" : "Secretaria"}
                 </span>
                 <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-                  {new Date(u.created_at).toLocaleDateString("pt-BR")}
+                  {formatDateBR(u.created_at)}
                 </span>
                 <button onClick={() => setEditing({ id: u.id, name: u.name, email: u.email, password: "", role: u.role as "admin" | "secretary" })} className="p-1.5 rounded-lg transition-colors hover:bg-orange-50">
                   <Edit2 className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />

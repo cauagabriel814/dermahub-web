@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { CalendarClock, XCircle, RotateCcw, Search, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { getScheduledMessages, updateScheduledMessage } from "@/services/messaging";
+import { formatDateShort } from "@/lib/format";
 import type { MessageStatus } from "@/types/api";
 
 const STATUS_LABELS: Record<MessageStatus, string> = {
@@ -192,7 +193,7 @@ export default function RecallsPage() {
                   {/* Date */}
                   <div className="text-center min-w-0">
                     <div className="text-xs font-bold" style={{ color: "oklch(0.327 0.0736 48.0)" }}>
-                      {scheduledDate.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}
+                      {formatDateShort(scheduledDate)}
                     </div>
                     <div className="text-[11px]" style={{ color: "oklch(0.596 0.036 57.9)" }}>
                       {scheduledDate.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}

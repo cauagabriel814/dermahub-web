@@ -3,6 +3,7 @@
 import { useState, useMemo, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { MessageSquare, Send, Inbox, Search, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { formatDateTime, formatDateTimeFull } from "@/lib/format";
 import { getMessageLogs } from "@/services/messaging";
 
 // TODO: Backend should return `patient_name` and `procedure_name` in the
@@ -264,12 +265,7 @@ export default function MessagesPage() {
                       style={{ color: "var(--muted-foreground)" }}
                     >
                       {sentDate
-                        ? sentDate.toLocaleString("pt-BR", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
+                        ? formatDateTime(sentDate)
                         : "\u2014"}
                     </div>
 
@@ -352,13 +348,7 @@ export default function MessagesPage() {
                           {sentDate && (
                             <span style={{ color: "var(--muted-foreground)" }}>
                               &mdash;{" "}
-                              {sentDate.toLocaleString("pt-BR", {
-                                day: "2-digit",
-                                month: "2-digit",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
+                              {formatDateTimeFull(sentDate)}
                             </span>
                           )}
                         </div>

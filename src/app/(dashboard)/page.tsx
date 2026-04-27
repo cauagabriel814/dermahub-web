@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Users, Syringe, CalendarClock, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { getDashboardSummary, getUpcomingRecalls, getMessageLogs } from "@/services/messaging";
+import { formatDateShort } from "@/lib/format";
 
 // TODO: backend dashboard API doesn't support period params yet — wire up when available
 const PERIOD_OPTIONS = [
@@ -147,7 +148,7 @@ export default function DashboardPage() {
                   <div key={r.id} className="flex gap-4 items-center px-6 py-3 table-row-hover">
                     <div className="text-center min-w-[44px]">
                       <div className="text-xs font-bold" style={{ color: "oklch(0.520 0.120 45)" }}>
-                        {d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}
+                        {formatDateShort(d)}
                       </div>
                     </div>
                     <p className="text-sm truncate" style={{ color: "oklch(0.220 0.025 45)" }}>{r.content}</p>
@@ -190,7 +191,7 @@ export default function DashboardPage() {
                     <div className="text-center min-w-[44px]">
                       {d ? (
                         <div className="text-xs font-bold" style={{ color: "oklch(0.520 0.120 45)" }}>
-                          {d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}
+                          {formatDateShort(d)}
                         </div>
                       ) : (
                         <div className="text-xs" style={{ color: "oklch(0.700 0.010 60)" }}>—</div>
