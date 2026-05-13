@@ -25,3 +25,14 @@ export async function getProcedureRecords(patientId?: string) {
 export async function createProcedureRecord(data: ProcedureRecordCreate) {
   return apiFetch<ProcedureRecord>("/procedure-records", { method: "POST", body: JSON.stringify(data) });
 }
+
+export async function updateProcedureRecord(id: string, data: Partial<ProcedureRecordCreate>) {
+  return apiFetch<ProcedureRecord>(`/procedure-records/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteProcedureRecord(id: string) {
+  return apiFetch<void>(`/procedure-records/${id}`, { method: "DELETE" });
+}

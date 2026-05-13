@@ -10,6 +10,7 @@ import { NAV_ITEMS } from "@/lib/constants";
 import { logout } from "@/services/auth";
 import { useAuth } from "@/hooks/use-auth";
 import { useOnboardingContext } from "@/components/onboarding/onboarding-provider";
+import { WhatsAppStatus } from "@/components/layout/whatsapp-status";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -108,6 +109,11 @@ export function Sidebar() {
           );
         })}
       </nav>
+
+      {/* WhatsApp status */}
+      <div className="relative px-3 pb-2">
+        <WhatsAppStatus />
+      </div>
 
       {/* Tour trigger */}
       <div className="relative px-3 pb-3">

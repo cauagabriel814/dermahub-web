@@ -3,12 +3,12 @@
 import { use, useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { ArrowLeft, Phone, Mail, CalendarDays, ClipboardList, MessageSquare, Send, Inbox, Pencil, X } from "lucide-react";
+import { ArrowLeft, Phone, Mail, CalendarDays, ClipboardList, MessageSquare, Send, Inbox, Pencil, X, Trash2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getPatient, updatePatient } from "@/services/patients";
-import { getProcedureRecords, getProcedureTypes } from "@/services/procedures";
+import { getProcedureRecords, getProcedureTypes, updateProcedureRecord, deleteProcedureRecord } from "@/services/procedures";
 import { getScheduledMessages, getMessageLogs } from "@/services/messaging";
 import { formatDateBR, formatDateTime } from "@/lib/format";
 
@@ -26,6 +26,8 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ full_name: "", phone: "", email: "", notes: "" });
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
+  const [recordForm, setRecordForm] = useState({ procedure_date: "", notes: "", procedure_type_id: "" });
 
   const { data: patient, isLoading } = useQuery({
     queryKey: ["patient", id],
@@ -68,6 +70,24 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
   const { data: procedureTypes = [] } = useQuery({
     queryKey: ["procedure-types"],
     queryFn: () => getProcedureTypes(),
+  });
+
+  const updateRecordMut = useMutation({
+    mutationFn: ({ recordId, data }: { recordId: string; data: { procedure_date?: string; notes?: string; procedure_type_id?: string } }) =>
+      updateProcedureRecord(recordId, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["procedure-records", id] });
+      qc.invalidateQueries({ queryKey: ["scheduled-messages", id] });
+      setEditingRecordId(null);
+    },
+  });
+
+  const deleteRecordMut = useMutation({
+    mutationFn: (recordId: string) => deleteProcedureRecord(recordId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["procedure-records", id] });
+      qc.invalidateQueries({ queryKey: ["scheduled-messages", id] });
+    },
   });
 
   const { data: scheduledMsgs = [] } = useQuery({
@@ -295,25 +315,131 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
           </div>
         ) : (
           <div className="divide-y" style={{ borderColor: "oklch(0.920 0.010 60)" }}>
-            {records.map((r) => (
-              <div key={r.id} className="flex items-center gap-4 px-5 py-3.5">
-                <div
-                  className="flex h-8 w-8 items-center justify-center rounded-lg shrink-0"
-                  style={{ background: "oklch(0.327 0.0736 48.0 / 0.10)" }}
-                >
-                  <CalendarDays className="h-3.5 w-3.5" style={{ color: "oklch(0.327 0.0736 48.0)" }} />
+            {records.map((r) => {
+              const isEditing = editingRecordId === r.id;
+              return (
+                <div key={r.id} className="px-5 py-3.5">
+                  {isEditing ? (
+                    /* ---- Edit form ---- */
+                    <div className="space-y-3" style={{ background: "oklch(0.97 0.005 55 / 0.6)", padding: "12px", borderRadius: "8px" }}>
+                      <div className="grid sm:grid-cols-3 gap-3">
+                        <div>
+                          <label className="text-[11px] font-medium uppercase tracking-wide block mb-1" style={{ color: "var(--muted-foreground)" }}>
+                            Procedimento
+                          </label>
+                          <select
+                            value={recordForm.procedure_type_id}
+                            onChange={(e) => setRecordForm({ ...recordForm, procedure_type_id: e.target.value })}
+                            className="w-full h-9 px-3 rounded-lg text-sm border bg-white"
+                            style={{ borderColor: "var(--border)" }}
+                          >
+                            {procedureTypes.map((pt) => (
+                              <option key={pt.id} value={pt.id}>{pt.name}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-[11px] font-medium uppercase tracking-wide block mb-1" style={{ color: "var(--muted-foreground)" }}>
+                            Data
+                          </label>
+                          <Input
+                            type="date"
+                            value={recordForm.procedure_date}
+                            onChange={(e) => setRecordForm({ ...recordForm, procedure_date: e.target.value })}
+                            className="h-9 text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[11px] font-medium uppercase tracking-wide block mb-1" style={{ color: "var(--muted-foreground)" }}>
+                            Observações
+                          </label>
+                          <Input
+                            value={recordForm.notes}
+                            onChange={(e) => setRecordForm({ ...recordForm, notes: e.target.value })}
+                            className="h-9 text-sm"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => updateRecordMut.mutate({
+                            recordId: r.id,
+                            data: {
+                              procedure_date: recordForm.procedure_date,
+                              notes: recordForm.notes || undefined,
+                              procedure_type_id: recordForm.procedure_type_id,
+                            },
+                          })}
+                          disabled={updateRecordMut.isPending}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium disabled:opacity-50"
+                          style={{ background: "var(--green)", color: "#fff" }}
+                        >
+                          <Check className="h-3.5 w-3.5" />
+                          {updateRecordMut.isPending ? "Salvando..." : "Salvar"}
+                        </button>
+                        <button
+                          onClick={() => setEditingRecordId(null)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium"
+                          style={{ color: "var(--muted-foreground)" }}
+                        >
+                          <X className="h-3.5 w-3.5" />
+                          Cancelar
+                        </button>
+                      </div>
+                      <p className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+                        Ao mudar a data, as mensagens ainda <strong>pendentes</strong> serão reagendadas. Mensagens já enviadas não são afetadas.
+                      </p>
+                    </div>
+                  ) : (
+                    /* ---- Display row ---- */
+                    <div className="flex items-center gap-4">
+                      <div
+                        className="flex h-8 w-8 items-center justify-center rounded-lg shrink-0"
+                        style={{ background: "oklch(0.327 0.0736 48.0 / 0.10)" }}
+                      >
+                        <CalendarDays className="h-3.5 w-3.5" style={{ color: "oklch(0.327 0.0736 48.0)" }} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium" style={{ color: "oklch(0.250 0.026 50.8)" }}>
+                          {ptMap[r.procedure_type_id] ?? "Procedimento"}
+                        </p>
+                        {r.notes && <p className="text-xs truncate" style={{ color: "oklch(0.596 0.036 57.9)" }}>{r.notes}</p>}
+                      </div>
+                      <span className="text-xs whitespace-nowrap" style={{ color: "oklch(0.596 0.036 57.9)" }}>
+                        {formatDateBR(r.procedure_date)}
+                      </span>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          onClick={() => {
+                            setEditingRecordId(r.id);
+                            setRecordForm({
+                              procedure_date: r.procedure_date,
+                              notes: r.notes || "",
+                              procedure_type_id: r.procedure_type_id,
+                            });
+                          }}
+                          className="p-1.5 rounded-lg transition-colors hover:bg-orange-50"
+                          title="Editar procedimento"
+                        >
+                          <Pencil className="h-3.5 w-3.5" style={{ color: "var(--muted-foreground)" }} />
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (window.confirm("Excluir este procedimento? Mensagens pendentes relacionadas serão removidas.")) {
+                              deleteRecordMut.mutate(r.id);
+                            }
+                          }}
+                          className="p-1.5 rounded-lg transition-colors hover:bg-red-50"
+                          title="Excluir procedimento"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" style={{ color: "oklch(0.55 0.15 27)" }} />
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium" style={{ color: "oklch(0.250 0.026 50.8)" }}>
-                    {ptMap[r.procedure_type_id] ?? "Procedimento"}
-                  </p>
-                  {r.notes && <p className="text-xs truncate" style={{ color: "oklch(0.596 0.036 57.9)" }}>{r.notes}</p>}
-                </div>
-                <span className="text-xs whitespace-nowrap" style={{ color: "oklch(0.596 0.036 57.9)" }}>
-                  {formatDateBR(r.procedure_date)}
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
