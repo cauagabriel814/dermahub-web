@@ -4,9 +4,6 @@ const apiUrl = process.env.API_INTERNAL_URL || "http://external-projects_dermahu
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  turbopack: {
-    root: ".",
-  },
   async rewrites() {
     return [
       {
